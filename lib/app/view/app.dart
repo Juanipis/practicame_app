@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:practicame_app/counter/counter.dart';
+import 'package:practicame_app/app/app.dart';
+import 'package:practicame_app/game/game.dart';
+import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/l10n/l10n.dart';
+
+GameInput gameInput = GameInput(
+  id: 0,
+  gameName: 'Write the name',
+  question: '¿Cuál es tu nombre?',
+  answer: 'Juan Pablo',
+  pictogramImage: 'assets/pictograms/name.png',
+);
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -16,7 +26,9 @@ class App extends StatelessWidget {
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const CounterPage(),
+      home: GamePage(
+        gameInput: gameInput,
+      ),
     );
   }
 }
