@@ -1,72 +1,69 @@
 import 'package:bloc/bloc.dart';
 
+enum StarType { none, gold, green, red }
+
 class GameCubit extends Cubit<GameState> {
   GameCubit(String correctAnswer)
       : super(
           GameState(
             correctAnswer: correctAnswer,
-            currentInput: List.filled(
-              correctAnswer.length,
-              '',
-            ), // Lista vacía para las letras ingresadas
-            stars: List.filled(
-              correctAnswer.length,
-              false,
-            ), // Falsos inicialmente, indicando que ninguna letra es correcta
+            currentInput: List.filled(correctAnswer.length, ''),
+            stars: List.filled(correctAnswer.length, StarType.none),
           ),
         );
 
-  // Actualiza la letra ingresada en la posición correcta
   void updateLetter(int index, String letter) {
-    // Verificar que la entrada sea válida
     if (letter.isEmpty) return;
 
-    final updatedInput = List<String>.from(
-        state.currentInput); // Crear una copia de la lista actual
-    updatedInput[index] =
-        letter; // Actualizar la letra en la posición correspondiente
+    final updatedInput = List<String>.from(state.currentInput);
+    updatedInput[index] = letter;
 
-    final updatedStars = List<bool>.from(
-        state.stars); // Crear una copia del estado de las estrellas
+    final updatedStars = List<StarType>.from(state.stars);
 
-    // Verificamos si la letra ingresada es correcta (comparando ignorando mayúsculas)
     final correctLetter = state.correctAnswer[index].toLowerCase();
     final inputLetter = letter.toLowerCase();
 
     if (inputLetter == correctLetter) {
-      print('La letra es correcta: $inputLetter en la posición $index');
-      updatedStars[index] =
-          true; // Si es correcta, actualizamos la estrella a true (verde)
+      // Si es la primera vez que la acierta
+      if (state.stars[index] == StarType.none) {
+        updatedStars[index] = StarType.gold;
+      }
+      // Si ya estaba mal antes pero la corrigió
+      else if (state.stars[index] == StarType.red) {
+        updatedStars[index] = StarType.green;
+      }
     } else {
-      print('La letra es incorrecta: $inputLetter en la posición $index');
-      updatedStars[index] =
-          false; // Si es incorrecta, la estrella es false (rojo)
+      updatedStars[index] = StarType.red;
     }
 
-    // Emitir el nuevo estado con el input y las estrellas actualizadas
     emit(state.copyWith(currentInput: updatedInput, stars: updatedStars));
   }
 
-  // Resetea el estado del juego
-  void reset() {
-    emit(
-      GameState(
-        correctAnswer: state.correctAnswer,
-        currentInput: List.filled(
-          state.correctAnswer.length,
-          '',
-        ), // Volver a un input vacío
-        stars: List.filled(
-          state.correctAnswer.length,
-          false,
-        ), // Reseteamos las estrellas
-      ),
-    );
+  // Método para contar las estrellas de cada tipo
+  Map<String, int> countStars() {
+    var goldStars = 0;
+    var greenStars = 0;
+    var redStars = 0;
+
+    for (final star in state.stars) {
+      if (star == StarType.gold) {
+        goldStars++;
+      } else if (star == StarType.green) {
+        greenStars++;
+      } else if (star == StarType.red) {
+        redStars++;
+      }
+    }
+
+    return {
+      'gold': goldStars,
+      'green': greenStars,
+      'red': redStars,
+    };
   }
 }
 
 class GameState {
-  // Estado de las estrellas (correcto o incorrecto para cada letra)
   GameState({
     required this.correctAnswer,
     required this.currentInput,
@@ -75,14 +72,14 @@ class GameState {
 
   final String correctAnswer; // Respuesta correcta
   final List<String> currentInput; // Letras ingresadas por el usuario
-  final List<bool>
-      stars; // Lista de booleanos que indican si cada letra es correcta
+  final List<StarType>
+      stars; // Lista de estrellas (dorada, verde, roja, ninguna)
 
   // Método para copiar el estado actual y modificar solo los campos necesarios
   GameState copyWith({
     String? correctAnswer,
     List<String>? currentInput,
-    List<bool>? stars,
+    List<StarType>? stars,
   }) {
     return GameState(
       correctAnswer: correctAnswer ?? this.correctAnswer,
