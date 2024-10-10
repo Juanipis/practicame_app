@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:practicame_app/app/app.dart';
 import 'package:practicame_app/game/game.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/l10n/l10n.dart';
