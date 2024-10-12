@@ -13,7 +13,8 @@ class GameCubit extends Cubit<GameState> {
         );
 
   void updateLetter(int index, String letter) {
-    if (letter.isEmpty) return;
+    if (letter.isEmpty || state.correctAnswer[index] == ' ')
+      return; // Skip spaces
 
     final updatedInput = List<String>.from(state.currentInput);
     updatedInput[index] = letter;
@@ -24,12 +25,9 @@ class GameCubit extends Cubit<GameState> {
     final inputLetter = letter.toLowerCase();
 
     if (inputLetter == correctLetter) {
-      // Si es la primera vez que la acierta
       if (state.stars[index] == StarType.none) {
         updatedStars[index] = StarType.gold;
-      }
-      // Si ya estaba mal antes pero la corrigió
-      else if (state.stars[index] == StarType.red) {
+      } else if (state.stars[index] == StarType.red) {
         updatedStars[index] = StarType.green;
       }
     } else {
@@ -37,29 +35,6 @@ class GameCubit extends Cubit<GameState> {
     }
 
     emit(state.copyWith(currentInput: updatedInput, stars: updatedStars));
-  }
-
-  // Método para contar las estrellas de cada tipo
-  Map<String, int> countStars() {
-    var goldStars = 0;
-    var greenStars = 0;
-    var redStars = 0;
-
-    for (final star in state.stars) {
-      if (star == StarType.gold) {
-        goldStars++;
-      } else if (star == StarType.green) {
-        greenStars++;
-      } else if (star == StarType.red) {
-        redStars++;
-      }
-    }
-
-    return {
-      'gold': goldStars,
-      'green': greenStars,
-      'red': redStars,
-    };
   }
 }
 

@@ -41,21 +41,25 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
     return BlocBuilder<GameCubit, GameState>(
       builder: (context, state) {
         final words = state.correctAnswer.split(' ');
-        var globalIndex = 0; // Índice global para recorrer todas las letras
+        var globalIndex = 0;
 
         return Column(
           children: words.map((word) {
-            // Construimos la fila de texto para cada palabra
             final row = Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: word.characters.map((letter) {
                 final currentIndex = globalIndex;
-                globalIndex++; // Aumentamos el índice global después de cada letra
+                globalIndex++; // Increment the global index for each letter
+
+                if (letter == ' ') {
+                  globalIndex++; // Skip the space in globalIndex
+                  return const SizedBox(
+                      width: 10); // Add spacing for visual separation
+                }
+
                 return KeyboardListener(
                   focusNode: FocusNode(canRequestFocus: false),
                   onKeyEvent: (value) {
-                    // if the textfield is empty and the backspace key is pressed
-                    // move the focus to the previous textfield
                     if (value.logicalKey == LogicalKeyboardKey.backspace &&
                         _controllers[currentIndex].text.isEmpty) {
                       FocusScope.of(context).previousFocus();
@@ -73,51 +77,33 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
                         required isFocused,
                         required maxLength,
                       }) {
-                        // Mostrar la estrella correcta basada en el tipo de estrella
+                        // Display the appropriate star based on its type
                         if (state.stars[currentIndex] == StarType.gold) {
                           return const Center(
-                            child: Icon(
-                              Icons.star,
-                              color: Colors.yellow, // Dorada
-                            ),
+                            child: Icon(Icons.star, color: Colors.yellow),
                           );
                         } else if (state.stars[currentIndex] ==
                             StarType.green) {
                           return const Center(
-                            child: Icon(
-                              Icons.star,
-                              color: Colors.green, // Verde
-                            ),
+                            child: Icon(Icons.star, color: Colors.green),
                           );
                         } else if (state.stars[currentIndex] == StarType.red) {
                           return const Center(
-                            child: Icon(
-                              Icons.star,
-                              color: Colors.red, // Roja
-                            ),
+                            child: Icon(Icons.star, color: Colors.red),
                           );
                         } else {
                           return const Center(
-                            child: Icon(
-                              Icons.star,
-                              color: Colors.grey, // Sin acierto
-                            ),
+                            child: Icon(Icons.star, color: Colors.grey),
                           );
                         }
                       },
                       onChanged: (value) {
-                        // Asegurarnos de que solo haya 1 letra en el campo
                         if (value.isNotEmpty) {
-                          // Solo tomamos el último carácter ingresado
                           final newValue = value.substring(value.length - 1);
                           _controllers[currentIndex].text = newValue;
-
-                          // Actualizar la letra en el cubit
                           context
                               .read<GameCubit>()
                               .updateLetter(currentIndex, newValue);
-
-                          // Mover el foco al siguiente campo si se ingresa un carácter
                           FocusScope.of(context).nextFocus();
                         }
                       },
@@ -127,12 +113,11 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
                     ),
                   ),
                 );
-              }).toList(), // Termina el mapeo de las letras
+              }).toList(),
             );
-
-            globalIndex++; // Incrementar para contar el espacio entre palabras
+            globalIndex++; // Skip index for space between words
             return row;
-          }).toList(), // Termina el mapeo de las palabras
+          }).toList(),
         );
       },
     );

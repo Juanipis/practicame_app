@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:practicame_app/app/app.dart';
 import 'package:practicame_app/game/cubit/game_cubit.dart';
 import 'package:practicame_app/game/model/game_input.dart';
@@ -36,6 +37,43 @@ class GameView extends StatelessWidget {
         ],
       ),
       body: GameBody(gameInput: gameInput),
+      floatingActionButton: ContinueButton(),
+    );
+  }
+}
+
+class ContinueButton extends StatelessWidget {
+  const ContinueButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final logger = Logger();
+    return BlocBuilder<GameCubit, GameState>(
+      builder: (context, state) {
+        // Ignore spaces when determining if all stars are gold or green
+        final isButtonEnabled = state.stars
+            .asMap()
+            .entries
+            .where((entry) => state.correctAnswer[entry.key] != ' ')
+            .every((entry) =>
+                entry.value == StarType.gold || entry.value == StarType.green);
+
+        // Log the state of the stars and button
+        logger.i('Stars: ${state.stars}');
+        logger.i('Button enabled: $isButtonEnabled');
+
+        return IconButton(
+          icon: const Icon(Icons.arrow_forward),
+          onPressed: isButtonEnabled
+              ? () {
+                  logger.i('Continue button pressed');
+                  // Navigate to the next page
+                }
+              : null,
+        );
+      },
     );
   }
 }
