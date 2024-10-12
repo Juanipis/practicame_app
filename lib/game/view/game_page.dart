@@ -37,7 +37,7 @@ class GameView extends StatelessWidget {
         ],
       ),
       body: GameBody(gameInput: gameInput),
-      floatingActionButton: ContinueButton(),
+      floatingActionButton: const ContinueButton(),
     );
   }
 }
