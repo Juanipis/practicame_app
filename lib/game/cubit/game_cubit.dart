@@ -13,8 +13,9 @@ class GameCubit extends Cubit<GameState> {
         );
 
   void updateLetter(int index, String letter) {
-    if (letter.isEmpty || state.correctAnswer[index] == ' ')
+    if (letter.isEmpty || state.correctAnswer[index] == ' ') {
       return; // Skip spaces
+    }
 
     final updatedInput = List<String>.from(state.currentInput);
     updatedInput[index] = letter;

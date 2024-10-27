@@ -69,7 +69,7 @@ class ContinueButton extends StatelessWidget {
           onPressed: isButtonEnabled
               ? () {
                   logger.i('Continue button pressed');
-                  // Navigate to the next page
+                  logger.i('Stars: ${state.stars}');
                 }
               : null,
         );
