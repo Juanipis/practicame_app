@@ -54,7 +54,8 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
                 if (letter == ' ') {
                   globalIndex++; // Skip the space in globalIndex
                   return const SizedBox(
-                      width: 10); // Add spacing for visual separation
+                    width: 10,
+                  ); // Add spacing for visual separation
                 }
 
                 return KeyboardListener(

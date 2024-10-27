@@ -1,75 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
-import 'package:practicame_app/app/app.dart';
 import 'package:practicame_app/game/cubit/game_cubit.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game/view/answer_input.dart';
 
 class GamePage extends StatelessWidget {
-  const GamePage({required this.gameInput, super.key});
+  const GamePage({
+    required this.gameInput,
+    required this.onGameComplete,
+    super.key,
+  });
+
   final GameInput gameInput;
+  final void Function(int, int) onGameComplete;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => GameCubit(gameInput.answer),
-      child: const GameView(),
+      child: GameView(gameInput: gameInput, onGameComplete: onGameComplete),
     );
   }
 }
 
 class GameView extends StatelessWidget {
-  const GameView({super.key});
+  const GameView({
+    required this.gameInput,
+    required this.onGameComplete,
+    super.key,
+  });
+
+  final GameInput gameInput;
+  final void Function(int, int) onGameComplete;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: const [
-          GameStars(
-            stars: 10,
-          ),
-        ],
-      ),
-      body: GameBody(gameInput: gameInput),
-      floatingActionButton: const ContinueButton(),
-    );
+    return GameBody(gameInput: gameInput, onGameComplete: onGameComplete);
   }
 }
 
 class ContinueButton extends StatelessWidget {
-  const ContinueButton({
-    super.key,
-  });
+  const ContinueButton({required this.onGameComplete, super.key});
+
+  final void Function(int, int) onGameComplete;
 
   @override
   Widget build(BuildContext context) {
     final logger = Logger();
     return BlocBuilder<GameCubit, GameState>(
       builder: (context, state) {
-        // Ignore spaces when determining if all stars are gold or green
         final isButtonEnabled = state.stars
             .asMap()
             .entries
             .where((entry) => state.correctAnswer[entry.key] != ' ')
-            .every((entry) =>
-                entry.value == StarType.gold || entry.value == StarType.green);
+            .every(
+              (entry) =>
+                  entry.value == StarType.gold || entry.value == StarType.green,
+            );
 
-        // Log the state of the stars and button
-        logger.i('Stars: ${state.stars}');
-        logger.i('Button enabled: $isButtonEnabled');
+        logger
+          ..i('Stars: ${state.stars}')
+          ..i('Button enabled: $isButtonEnabled');
 
         return IconButton(
           icon: const Icon(Icons.arrow_forward),
           onPressed: isButtonEnabled
               ? () {
-                  logger.i('Continue button pressed');
-                  logger.i('Stars: ${state.stars}');
+                  logger
+                    ..i('Continue button pressed')
+                    ..i('Stars: ${state.stars}');
+                  onGameComplete(
+                    state.stars
+                        .where(
+                          (star) => star == StarType.gold,
+                        )
+                        .length,
+                    state.stars.where((star) => star == StarType.green).length,
+                  );
                 }
               : null,
         );
@@ -79,10 +87,7 @@ class ContinueButton extends StatelessWidget {
 }
 
 class GameStars extends StatelessWidget {
-  const GameStars({
-    required this.stars,
-    super.key,
-  });
+  const GameStars({required this.stars, super.key});
   final int stars;
 
   @override
@@ -97,8 +102,13 @@ class GameStars extends StatelessWidget {
 }
 
 class GameBody extends StatelessWidget {
-  const GameBody({required this.gameInput, super.key});
+  const GameBody({
+    required this.gameInput,
+    required this.onGameComplete,
+    super.key,
+  });
   final GameInput gameInput;
+  final void Function(int, int) onGameComplete;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +118,7 @@ class GameBody extends StatelessWidget {
           GameImage(image: gameInput.pictogramImage),
           GameQuestion(question: gameInput.question),
           const GameAnswerInputCol(),
+          ContinueButton(onGameComplete: onGameComplete),
         ],
       ),
     );
