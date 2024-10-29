@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game_session/view/game_session_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:user_repository/user_repository.dart';
 
 GameInput gameInput = GameInput(
   id: 0,
@@ -38,9 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadUserName() async {
-    final prefs = await SharedPreferences.getInstance();
+    final userRepo = UserRepository();
+    final prefs = await userRepo.getUser();
     setState(() {
-      _userName = prefs.getString('name') ?? 'Usuario';
+      _userName = prefs.name;
     });
   }
 

@@ -33,7 +33,7 @@ class GameSessionView extends StatelessWidget {
                   Text('${state.totalGoldStars}'),
                   const Icon(Icons.star, color: Colors.yellow),
                   Text('${state.totalGreenStars}'),
-                  const Icon(Icons.star, color: Colors.green)
+                  const Icon(Icons.star, color: Colors.green),
                 ],
               );
             },

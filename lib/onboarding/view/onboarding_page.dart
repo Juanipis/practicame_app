@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:practicame_app/onboarding/cubit/onboarding_cubit.dart';
+import 'package:user_repository/user_repository.dart';
 
 class OnboardingScreen extends StatelessWidget {
   OnboardingScreen({super.key});
@@ -21,82 +22,89 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Onboarding')),
+      appBar: AppBar(title: const Text('Onboarding')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Column(
             children: [
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Nombre'),
+                decoration: const InputDecoration(labelText: 'Nombre'),
               ),
               TextField(
                 controller: _documentController,
-                decoration: InputDecoration(labelText: 'Número de Documento'),
+                decoration:
+                    const InputDecoration(labelText: 'Número de Documento'),
               ),
               TextField(
                 controller: _birthDateController,
-                decoration: InputDecoration(labelText: 'Fecha de Nacimiento'),
+                decoration:
+                    const InputDecoration(labelText: 'Fecha de Nacimiento'),
               ),
               TextField(
                 controller: _ageController,
-                decoration: InputDecoration(labelText: 'Edad'),
+                decoration: const InputDecoration(labelText: 'Edad'),
               ),
               TextField(
                 controller: _epsController,
-                decoration: InputDecoration(labelText: 'EPS'),
+                decoration: const InputDecoration(labelText: 'EPS'),
               ),
               TextField(
                 controller: _bloodTypeController,
-                decoration: InputDecoration(labelText: 'Tipo de Sangre'),
+                decoration: const InputDecoration(labelText: 'Tipo de Sangre'),
               ),
               TextField(
                 controller: _cityController,
-                decoration: InputDecoration(labelText: 'Municipio'),
+                decoration: const InputDecoration(labelText: 'Municipio'),
               ),
               TextField(
                 controller: _addressController,
-                decoration: InputDecoration(labelText: 'Dirección'),
+                decoration: const InputDecoration(labelText: 'Dirección'),
               ),
               TextField(
                 controller: _neighborhoodController,
-                decoration: InputDecoration(labelText: 'Barrio'),
+                decoration: const InputDecoration(labelText: 'Barrio'),
               ),
               TextField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Número de Celular'),
+                decoration:
+                    const InputDecoration(labelText: 'Número de Celular'),
               ),
               TextField(
                 controller: _emergencyContactNameController,
-                decoration: InputDecoration(
-                    labelText: 'Nombre de Contacto de Emergencia'),
+                decoration: const InputDecoration(
+                  labelText: 'Nombre de Contacto de Emergencia',
+                ),
               ),
               TextField(
                 controller: _emergencyContactPhoneController,
-                decoration: InputDecoration(
-                    labelText: 'Teléfono de Contacto de Emergencia'),
+                decoration: const InputDecoration(
+                  labelText: 'Teléfono de Contacto de Emergencia',
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  context.read<OnboardingCubit>().saveUserData(
-                        name: _nameController.text,
-                        document: _documentController.text,
-                        birthDate: _birthDateController.text,
-                        age: int.parse(_ageController.text),
-                        eps: _epsController.text,
-                        bloodType: _bloodTypeController.text,
-                        city: _cityController.text,
-                        address: _addressController.text,
-                        neighborhood: _neighborhoodController.text,
-                        phone: _phoneController.text,
-                        emergencyContactName:
-                            _emergencyContactNameController.text,
-                        emergencyContactPhone:
-                            _emergencyContactPhoneController.text,
-                      );
+                  final userModel = UserModel(
+                    name: _nameController.text,
+                    document: _documentController.text,
+                    birthDate: DateTime.parse(_birthDateController.text),
+                    age: int.parse(_ageController.text),
+                    eps: _epsController.text,
+                    bloodType: _bloodTypeController.text,
+                    city: _cityController.text,
+                    address: _addressController.text,
+                    neighborhood: _neighborhoodController.text,
+                    phone: _phoneController.text,
+                    emergencyContactName: _emergencyContactNameController.text,
+                    emergencyContactPhone:
+                        _emergencyContactPhoneController.text,
+                  );
+                  context
+                      .read<OnboardingCubit>()
+                      .saveUserData(userModel: userModel);
                 },
-                child: Text('Completar Onboarding'),
+                child: const Text('Completar Onboarding'),
               ),
             ],
           ),
