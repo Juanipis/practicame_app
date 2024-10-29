@@ -1,27 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:practicame_app/game/model/game_input.dart';
-import 'package:practicame_app/game_session/view/game_session_page.dart';
 import 'package:practicame_app/home/view/home_page.dart';
 import 'package:practicame_app/l10n/l10n.dart';
 import 'package:practicame_app/onboarding/cubit/onboarding_cubit.dart';
 import 'package:practicame_app/onboarding/view/onboarding_page.dart';
-
-GameInput gameInput = GameInput(
-  id: 0,
-  gameName: 'Write the name',
-  question: '¿Cuál es tu nombre?',
-  answer: 'Juan Pablo',
-  pictogramImage: 'assets/pictograms/name.png',
-);
-
-GameInput gameInput2 = GameInput(
-  id: 1,
-  gameName: 'Write the age',
-  question: '¿Cuántos años tienes?',
-  answer: '25',
-  pictogramImage: 'assets/pictograms/age.png',
-);
+import 'package:user_repository/user_repository.dart';
 
 List<GameInput> games = [gameInput, gameInput2];
 
@@ -30,8 +14,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userRepository = UserRepository();
     return BlocProvider(
-      create: (context) => OnboardingCubit()..checkOnboardingStatus(),
+      create: (context) =>
+          OnboardingCubit(userRepository)..checkOnboardingStatus(),
       child: MaterialApp(
         theme: ThemeData(
           appBarTheme: AppBarTheme(
