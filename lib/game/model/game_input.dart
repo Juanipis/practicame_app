@@ -1,3 +1,5 @@
+import 'package:user_repository/user_repository.dart';
+
 class GameInput {
   GameInput({
     required this.id,
@@ -5,11 +7,57 @@ class GameInput {
     required this.question,
     required this.answer,
     required this.pictogramImage,
+    required this.userAttribute,
   });
 
   final int id;
   final String gameName;
   final String question;
-  final String answer;
+  String answer;
   final String pictogramImage;
+  final UserAttributes userAttribute;
+
+  GameInput copyWith({String? answer}) {
+    return GameInput(
+      id: id,
+      gameName: gameName,
+      question: question,
+      answer: answer ?? this.answer,
+      pictogramImage: pictogramImage,
+      userAttribute: userAttribute,
+    );
+  }
+
+  String getUserAttributeValue(UserModel user) {
+    switch (userAttribute) {
+      case UserAttributes.name:
+        return user.name;
+      case UserAttributes.lastName:
+        return user.lastName;
+      case UserAttributes.fullName:
+        return user.fullName;
+      case UserAttributes.document:
+        return user.document;
+      case UserAttributes.birthDate:
+        return user.birthDate.toIso8601String(); // Convierte DateTime a String
+      case UserAttributes.age:
+        return user.age.toString();
+      case UserAttributes.eps:
+        return user.eps;
+      case UserAttributes.bloodType:
+        return user.bloodType;
+      case UserAttributes.city:
+        return user.city;
+      case UserAttributes.address:
+        return user.address;
+      case UserAttributes.neighborhood:
+        return user.neighborhood;
+      case UserAttributes.phone:
+        return user.phone;
+      case UserAttributes.emergencyContactName:
+        return user.emergencyContactName;
+      case UserAttributes.emergencyContactPhone:
+        return user.emergencyContactPhone;
+    }
+  }
 }

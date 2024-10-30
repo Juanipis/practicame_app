@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/home/view/home_page.dart';
 import 'package:practicame_app/l10n/l10n.dart';
 import 'package:practicame_app/onboarding/cubit/onboarding_cubit.dart';
 import 'package:practicame_app/onboarding/view/onboarding_page.dart';
 import 'package:user_repository/user_repository.dart';
 
-List<GameInput> games = [gameInput, gameInput2];
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 

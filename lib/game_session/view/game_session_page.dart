@@ -44,6 +44,9 @@ class GameSessionView extends StatelessWidget {
       ),
       body: BlocBuilder<GameSessionCubit, GameSessionState>(
         builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
           if (state.isCompleted) {
             return Center(
               child: Text(
