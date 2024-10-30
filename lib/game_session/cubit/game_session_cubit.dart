@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:practicame_app/game/model/game_input.dart';
+import 'package:user_repository/user_repository.dart';
 
 class GameSessionCubit extends Cubit<GameSessionState> {
-  GameSessionCubit(List<GameInput> games)
+  GameSessionCubit(List<GameInput> games, this._userRepository)
       : super(
           GameSessionState(
             games: games,
@@ -12,6 +13,7 @@ class GameSessionCubit extends Cubit<GameSessionState> {
             totalGreenStars: 0,
           ),
         );
+  final UserRepository _userRepository;
 
   void completeGame(int goldStars, int greenStars) {
     final newTotalGoldStars = state.totalGoldStars + goldStars;
@@ -27,6 +29,10 @@ class GameSessionCubit extends Cubit<GameSessionState> {
         ),
       );
     } else {
+      _userRepository.appendStars(
+        newTotalGoldStars,
+        newTotalGreenStars,
+      );
       emit(
         state.copyWith(
           isCompleted: true,

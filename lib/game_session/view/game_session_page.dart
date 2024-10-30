@@ -3,15 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game/view/game_page.dart';
 import 'package:practicame_app/game_session/cubit/game_session_cubit.dart';
+import 'package:user_repository/user_repository.dart';
 
 class GameSessionPage extends StatelessWidget {
-  const GameSessionPage({required this.games, super.key});
+  GameSessionPage({required this.games, super.key});
   final List<GameInput> games;
+  final _userRepository = UserRepository();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => GameSessionCubit(games),
+      create: (_) => GameSessionCubit(games, _userRepository),
       child: const GameSessionView(),
     );
   }
