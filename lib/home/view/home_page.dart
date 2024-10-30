@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:practicame_app/app/view/app.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game_session/view/game_session_page.dart';
 import 'package:user_repository/user_repository.dart';
@@ -28,13 +29,32 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
   String? _userName;
+  UserStars? _userStars;
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
+    _loadUserStars();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadUserStars();
   }
 
   Future<void> _loadUserName() async {
@@ -42,6 +62,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final prefs = await userRepo.getUser();
     setState(() {
       _userName = prefs.name;
+    });
+  }
+
+  Future<void> _loadUserStars() async {
+    final userRepo = UserRepository();
+    final prefs = await userRepo.getUserStars();
+    setState(() {
+      _userStars = prefs;
     });
   }
 
@@ -56,6 +84,21 @@ class _HomeScreenState extends State<HomeScreen> {
               '¡Bienvenido, $_userName!',
               style: const TextStyle(fontSize: 24),
             ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Text('Estrellas doradas: '),
+              Text('${_userStars?.goldStars ?? 0}'),
+              const Icon(Icons.star, color: Colors.yellow),
+            ],
+          ),
+          Row(
+            children: [
+              const Text('Estrellas verdes: '),
+              Text('${_userStars?.greenStars ?? 0}'),
+              const Icon(Icons.star, color: Colors.green),
+            ],
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).push(

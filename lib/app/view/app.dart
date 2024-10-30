@@ -8,6 +8,8 @@ import 'package:practicame_app/onboarding/view/onboarding_page.dart';
 import 'package:user_repository/user_repository.dart';
 
 List<GameInput> games = [gameInput, gameInput2];
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -15,6 +17,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userRepository = UserRepository();
+
     return BlocProvider(
       create: (context) =>
           OnboardingCubit(userRepository)..checkOnboardingStatus(),
@@ -27,6 +30,7 @@ class App extends StatelessWidget {
         ),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
+        navigatorObservers: <NavigatorObserver>[routeObserver],
         home: BlocBuilder<OnboardingCubit, OnboardingState>(
           builder: (context, state) {
             if (state is OnboardingNotCompleted) {
