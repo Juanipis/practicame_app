@@ -1,26 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:practicame_app/app/view/app.dart';
-import 'package:practicame_app/game/model/game_input.dart';
+import 'package:practicame_app/game_session/advanced_games.dart';
+import 'package:practicame_app/game_session/starter_games.dart';
 import 'package:practicame_app/game_session/view/game_session_page.dart';
 import 'package:user_repository/user_repository.dart';
-
-GameInput gameInput = GameInput(
-  id: 0,
-  gameName: 'Write the name',
-  question: '¿Cuál es tu nombre?',
-  answer: 'Juan Pablo',
-  pictogramImage: 'assets/pictograms/name.png',
-);
-
-GameInput gameInput2 = GameInput(
-  id: 1,
-  gameName: 'Write the age',
-  question: '¿Cuántos años tienes?',
-  answer: '25',
-  pictogramImage: 'assets/pictograms/age.png',
-);
-
-List<GameInput> games = [gameInput, gameInput2];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,10 +86,18 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
           ElevatedButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<GameSessionPage>(
-                builder: (context) => GameSessionPage(games: games),
+                builder: (context) => GameSessionPage(games: starterGames),
               ),
             ),
-            child: const Text('Jugar'),
+            child: const Text('Jugar principiante'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<GameSessionPage>(
+                builder: (context) => GameSessionPage(games: advancedGames),
+              ),
+            ),
+            child: const Text('Jugar Avanzado'),
           ),
         ],
       ),

@@ -7,6 +7,7 @@ class OnboardingScreen extends StatelessWidget {
   OnboardingScreen({super.key});
 
   final _nameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _documentController = TextEditingController();
   final _birthDateController = TextEditingController();
   final _ageController = TextEditingController();
@@ -31,6 +32,10 @@ class OnboardingScreen extends StatelessWidget {
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Nombre'),
+              ),
+              TextField(
+                controller: _lastNameController,
+                decoration: const InputDecoration(labelText: 'Apellido'),
               ),
               TextField(
                 controller: _documentController,
@@ -87,6 +92,7 @@ class OnboardingScreen extends StatelessWidget {
                 onPressed: () {
                   final userModel = UserModel(
                     name: _nameController.text,
+                    lastName: _lastNameController.text,
                     document: _documentController.text,
                     birthDate: DateTime.parse(_birthDateController.text),
                     age: int.parse(_ageController.text),

@@ -16,7 +16,8 @@ class UserModel {
     required this.phone,
     required this.emergencyContactName,
     required this.emergencyContactPhone,
-  });
+    required this.lastName,
+  }) : fullName = '$name $lastName';
 
   /// Factory method to create a default user.
   factory UserModel.defaultUser() {
@@ -33,6 +34,7 @@ class UserModel {
       phone: 'No phone',
       emergencyContactName: 'No emergency contact name',
       emergencyContactPhone: 'No emergency contact phone',
+      lastName: 'No last name',
     );
   }
 
@@ -51,11 +53,18 @@ class UserModel {
       phone: map['phone'] as String,
       emergencyContactName: map['emergencyContactName'] as String,
       emergencyContactPhone: map['emergencyContactPhone'] as String,
+      lastName: map['lastName'] as String,
     );
   }
 
   /// The name of the user.
   final String name;
+
+  /// The last name of the user.
+  final String lastName;
+
+  /// The full name of the user.
+  final String fullName;
 
   /// The document ID of the user.
   final String document;
@@ -94,6 +103,8 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'lastName': lastName,
+      'fullName': fullName,
       'document': document,
       'birthDate': birthDate.toIso8601String(),
       'age': age,
@@ -107,4 +118,22 @@ class UserModel {
       'emergencyContactPhone': emergencyContactPhone,
     };
   }
+}
+
+/// Enum to represent the user attributes.
+enum UserAttributes {
+  name,
+  lastName,
+  fullName,
+  document,
+  birthDate,
+  age,
+  eps,
+  bloodType,
+  city,
+  address,
+  neighborhood,
+  phone,
+  emergencyContactName,
+  emergencyContactPhone,
 }
