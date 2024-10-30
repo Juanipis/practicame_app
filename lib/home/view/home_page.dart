@@ -62,42 +62,81 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
       appBar: AppBar(title: const Text('Home')),
       body: Column(
         children: [
-          Center(
-            child: Text(
-              '¡Bienvenido, $_userName!',
-              style: const TextStyle(fontSize: 24),
-            ),
-          ),
-          const SizedBox(height: 16),
           Row(
             children: [
-              const Text('Estrellas doradas: '),
               Text('${_userStars?.goldStars ?? 0}'),
               const Icon(Icons.star, color: Colors.yellow),
-            ],
-          ),
-          Row(
-            children: [
-              const Text('Estrellas verdes: '),
               Text('${_userStars?.greenStars ?? 0}'),
               const Icon(Icons.star, color: Colors.green),
             ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<GameSessionPage>(
-                builder: (context) => GameSessionPage(games: starterGames),
-              ),
+          // Row(
+          //   children: [
+          //     const Text('Estrellas doradas: '),
+          //     Text('${_userStars?.goldStars ?? 0}'),
+          //     const Icon(Icons.star, color: Colors.yellow),
+          //   ],
+          // ),
+          // Row(
+          //   children: [
+          //     const Text('Estrellas verdes: '),
+          //     Text('${_userStars?.greenStars ?? 0}'),
+          //     const Icon(Icons.star, color: Colors.green),
+          //   ],
+          // ),
+          const SizedBox(height: 25),
+          SizedBox(
+              height: 300,
+              child: Center(
+                child: Text(
+                  '*Aca ponemos el muñeco*',
+                  style: const TextStyle(fontSize: 10),
+                ),
+              )),
+          Center(
+            child: Text(
+              'Hola $_userName, practicamos?',
+              style: const TextStyle(fontSize: 24),
             ),
-            child: const Text('Jugar principiante'),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<GameSessionPage>(
-                builder: (context) => GameSessionPage(games: advancedGames),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<GameSessionPage>(
+                  builder: (context) => GameSessionPage(games: starterGames),
+                ),
               ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 193, 236, 194),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: const BorderSide(color: Colors.green, width: 2),
+                ),
+              ),
+              child: const Text('FÁCIL', style: const TextStyle(fontSize: 16)),
             ),
-            child: const Text('Jugar Avanzado'),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<GameSessionPage>(
+                  builder: (context) => GameSessionPage(games: advancedGames),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 233, 172, 168),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: const BorderSide(color: Colors.red, width: 2),
+                ),
+              ),
+              child:
+                  const Text('DIFÍCIL', style: const TextStyle(fontSize: 16)),
+            ),
           ),
         ],
       ),
