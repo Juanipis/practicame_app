@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:practicame_app/game/cubit/game_cubit.dart';
+import 'package:practicame_app/game/model/game_help.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game/view/answer_input.dart';
 
@@ -122,6 +123,17 @@ class GameBody extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class GameHelp extends StatelessWidget {
+  const GameHelp({super.key, required this.gameHelps});
+
+  final GameHelps gameHelps;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
 

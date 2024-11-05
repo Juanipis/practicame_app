@@ -1,3 +1,4 @@
+import 'package:practicame_app/game/model/game_help.dart';
 import 'package:user_repository/user_repository.dart';
 
 class GameInput {
@@ -8,6 +9,7 @@ class GameInput {
     required this.answer,
     required this.pictogramImage,
     required this.userAttribute,
+    this.gameHelps,
   });
 
   final int id;
@@ -16,8 +18,9 @@ class GameInput {
   String answer;
   final String pictogramImage;
   final UserAttributes userAttribute;
+  final GameHelps? gameHelps;
 
-  GameInput copyWith({String? answer}) {
+  GameInput copyWith({String? answer, GameHelps? gameHelps}) {
     return GameInput(
       id: id,
       gameName: gameName,
@@ -25,6 +28,7 @@ class GameInput {
       answer: answer ?? this.answer,
       pictogramImage: pictogramImage,
       userAttribute: userAttribute,
+      gameHelps: gameHelps ?? this.gameHelps,
     );
   }
 
