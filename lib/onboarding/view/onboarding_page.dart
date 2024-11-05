@@ -3,9 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:practicame_app/onboarding/cubit/onboarding_cubit.dart';
 import 'package:user_repository/user_repository.dart';
 
-class OnboardingScreen extends StatelessWidget {
-  OnboardingScreen({super.key});
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
 
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
   final _nameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _documentController = TextEditingController();

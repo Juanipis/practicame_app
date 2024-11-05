@@ -48,11 +48,20 @@ class GameSessionView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.isCompleted) {
-            return Center(
-              child: Text(
-                'Congratulations! You have completed all games with ${state.totalGoldStars} gold stars and ${state.totalGreenStars} green stars!',
+            return Column(children: [
+              Center(
+                child: Text(
+                  'Lección Finalizada!',
+                  style: const TextStyle(fontSize: 24),
+                ),
               ),
-            );
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  'Congratulations! You have completed all games with ${state.totalGoldStars} gold stars and ${state.totalGreenStars} green stars!',
+                ),
+              )
+            ]);
           } else {
             final currentGame = state.games[state.currentGameIndex];
             return GamePage(

@@ -5,6 +5,7 @@ import 'package:practicame_app/l10n/l10n.dart';
 import 'package:practicame_app/onboarding/cubit/onboarding_cubit.dart';
 import 'package:practicame_app/onboarding/view/onboarding_page.dart';
 import 'package:user_repository/user_repository.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -21,8 +22,21 @@ class App extends StatelessWidget {
           OnboardingCubit(userRepository)..checkOnboardingStatus(),
       child: MaterialApp(
         theme: ThemeData(
-          appBarTheme: AppBarTheme(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          scaffoldBackgroundColor: Colors.white,
+          textTheme: GoogleFonts.chewyTextTheme(),
+          appBarTheme: const AppBarTheme(
+              backgroundColor:
+                  Colors.white //Theme.of(context).colorScheme.inversePrimary,
+              ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white, // Color de fondo
+              foregroundColor: Colors.black, // Color de texto
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.black, width: 2)),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            ),
           ),
           useMaterial3: true,
         ),
