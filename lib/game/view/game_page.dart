@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:practicame_app/game/cubit/game_cubit.dart';
-import 'package:practicame_app/game/model/game_help.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game/view/answer_input.dart';
+import 'package:practicame_app/game/view/game_eps.dart';
+import 'package:practicame_app/game/view/game_helper.dart';
 
 class GamePage extends StatelessWidget {
   const GamePage({
@@ -37,6 +38,9 @@ class GameView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (gameInput.isEPSGame ?? false) {
+      return EpsGameBody(gameInput: gameInput, onGameComplete: onGameComplete);
+    }
     return GameBody(gameInput: gameInput, onGameComplete: onGameComplete);
   }
 }
@@ -118,22 +122,13 @@ class GameBody extends StatelessWidget {
         children: [
           GameImage(image: gameInput.pictogramImage),
           GameQuestion(question: gameInput.question),
+          if (gameInput.gameHelps != null)
+            GameHelp(gameHelps: gameInput.gameHelps!),
           const GameAnswerInputCol(),
           ContinueButton(onGameComplete: onGameComplete),
         ],
       ),
     );
-  }
-}
-
-class GameHelp extends StatelessWidget {
-  const GameHelp({super.key, required this.gameHelps});
-
-  final GameHelps gameHelps;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
 

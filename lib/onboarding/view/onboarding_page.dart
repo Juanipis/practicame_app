@@ -16,7 +16,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _documentController = TextEditingController();
   final _birthDateController = TextEditingController();
   final _ageController = TextEditingController();
-  final _epsController = TextEditingController();
   final _bloodTypeController = TextEditingController();
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
@@ -24,6 +23,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _phoneController = TextEditingController();
   final _emergencyContactNameController = TextEditingController();
   final _emergencyContactPhoneController = TextEditingController();
+  EPS? _selectedEPS;
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +56,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _ageController,
                 decoration: const InputDecoration(labelText: 'Edad'),
               ),
-              TextField(
-                controller: _epsController,
+              DropdownButtonFormField<EPS>(
+                value: _selectedEPS,
                 decoration: const InputDecoration(labelText: 'EPS'),
+                items: EPS.values.map((EPS eps) {
+                  return DropdownMenuItem<EPS>(
+                    value: eps,
+                    child: Text(eps.name),
+                  );
+                }).toList(),
+                onChanged: (EPS? newValue) {
+                  setState(() {
+                    _selectedEPS = newValue;
+                  });
+                },
               ),
               TextField(
                 controller: _bloodTypeController,
@@ -101,7 +112,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     document: _documentController.text,
                     birthDate: DateTime.parse(_birthDateController.text),
                     age: int.parse(_ageController.text),
-                    eps: _epsController.text,
+                    eps: _selectedEPS ??
+                        EPS.aliansalud_entidad_promotora_de_salud_s_a,
                     bloodType: _bloodTypeController.text,
                     city: _cityController.text,
                     address: _addressController.text,
