@@ -1,5 +1,12 @@
+import 'package:practicame_app/game/model/game_help.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:user_repository/user_repository.dart';
+
+GameHelps gameHelps101 = GameHelps(
+    text:
+        'Tu npmbre completo es aquel que aparece en tu documento de identidad.',
+    images: [],
+    audios: []);
 
 GameInput game101 = GameInput(
   id: 101,
@@ -8,6 +15,7 @@ GameInput game101 = GameInput(
   answer: '',
   pictogramImage: 'assets/pictograms/full_name.png',
   userAttribute: UserAttributes.fullName,
+  gameHelps: gameHelps101,
 );
 
 GameInput game109 = GameInput(

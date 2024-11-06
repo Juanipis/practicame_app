@@ -1,3 +1,4 @@
+import 'package:practicame_app/game/model/game_help.dart';
 import 'package:user_repository/user_repository.dart';
 
 class GameInput {
@@ -8,6 +9,8 @@ class GameInput {
     required this.answer,
     required this.pictogramImage,
     required this.userAttribute,
+    this.gameHelps,
+    this.isEPSGame,
   });
 
   final int id;
@@ -16,8 +19,10 @@ class GameInput {
   String answer;
   final String pictogramImage;
   final UserAttributes userAttribute;
+  final GameHelps? gameHelps;
+  final bool? isEPSGame;
 
-  GameInput copyWith({String? answer}) {
+  GameInput copyWith({String? answer, GameHelps? gameHelps}) {
     return GameInput(
       id: id,
       gameName: gameName,
@@ -25,6 +30,8 @@ class GameInput {
       answer: answer ?? this.answer,
       pictogramImage: pictogramImage,
       userAttribute: userAttribute,
+      gameHelps: gameHelps ?? this.gameHelps,
+      isEPSGame: isEPSGame,
     );
   }
 
@@ -43,7 +50,7 @@ class GameInput {
       case UserAttributes.age:
         return user.age.toString();
       case UserAttributes.eps:
-        return user.eps;
+        return user.eps.name;
       case UserAttributes.bloodType:
         return user.bloodType;
       case UserAttributes.city:
