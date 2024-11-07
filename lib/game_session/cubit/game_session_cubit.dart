@@ -1,6 +1,9 @@
 import 'package:bloc/bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:user_repository/user_repository.dart';
+
+final Logger _logger = Logger();
 
 class GameSessionCubit extends Cubit<GameSessionState> {
   GameSessionCubit(List<GameInput> games, this._userRepository)
@@ -29,10 +32,13 @@ class GameSessionCubit extends Cubit<GameSessionState> {
   }
 
   static Future<List<GameInput>> _getAnswersForGames(
-      List<GameInput> games, UserRepository userRepository) async {
+    List<GameInput> games,
+    UserRepository userRepository,
+  ) async {
     final user = await userRepository.getUser();
     return games.map((game) {
       final answer = game.getUserAttributeValue(user);
+      _logger.d('Answer for game ${game.id}: $answer');
       return game.copyWith(answer: answer);
     }).toList();
   }

@@ -17,7 +17,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _birthDateController = TextEditingController();
   final _ageController = TextEditingController();
   final _bloodTypeController = TextEditingController();
-  final _cityController = TextEditingController();
+  final _municipalityController = TextEditingController();
   final _addressController = TextEditingController();
   final _neighborhoodController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -76,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 decoration: const InputDecoration(labelText: 'Tipo de Sangre'),
               ),
               TextField(
-                controller: _cityController,
+                controller: _municipalityController,
                 decoration: const InputDecoration(labelText: 'Municipio'),
               ),
               TextField(
@@ -115,7 +115,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     eps: _selectedEPS ??
                         EPS.aliansalud_entidad_promotora_de_salud_s_a,
                     bloodType: _bloodTypeController.text,
-                    city: _cityController.text,
+                    municipality: _municipalityController.text,
                     address: _addressController.text,
                     neighborhood: _neighborhoodController.text,
                     phone: _phoneController.text,

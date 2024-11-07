@@ -1,3 +1,7 @@
+import 'package:intl/intl.dart';
+
+DateFormat _formatDate = DateFormat("d 'de' MMMM 'de' y");
+
 /// {@template user_model}
 /// Mode which represents the user data.
 /// {@endtemplate}
@@ -10,7 +14,7 @@ class UserModel {
     required this.age,
     required this.eps,
     required this.bloodType,
-    required this.city,
+    required this.municipality,
     required this.address,
     required this.neighborhood,
     required this.phone,
@@ -27,7 +31,7 @@ class UserModel {
       birthDate: DateTime.now(),
       age: 0,
       bloodType: 'No blood type',
-      city: 'No city',
+      municipality: 'No municipality',
       address: 'No address',
       neighborhood: 'No neighborhood',
       phone: 'No phone',
@@ -46,7 +50,7 @@ class UserModel {
       birthDate: DateTime.parse(map['birthDate'] as String),
       age: map['age'] as int,
       bloodType: map['bloodType'] as String,
-      city: map['city'] as String,
+      municipality: map['municipality'] as String,
       address: map['address'] as String,
       neighborhood: map['neighborhood'] as String,
       phone: map['phone'] as String,
@@ -78,8 +82,8 @@ class UserModel {
   /// The blood type of the user.
   final String bloodType;
 
-  /// The city of the user.
-  final String city;
+  /// The municipality of the user.
+  final String municipality;
 
   /// The address of the user.
   final String address;
@@ -106,11 +110,11 @@ class UserModel {
       'lastName': lastName,
       'fullName': fullName,
       'document': document,
-      'birthDate': birthDate.toIso8601String(),
+      'birthDate': _formatDate.format(birthDate),
       'age': age,
       'eps': eps.toString(),
       'bloodType': bloodType,
-      'city': city,
+      'municipality': municipality,
       'address': address,
       'neighborhood': neighborhood,
       'phone': phone,
@@ -130,7 +134,7 @@ enum UserAttributes {
   age,
   eps,
   bloodType,
-  city,
+  municipality,
   address,
   neighborhood,
   phone,
@@ -170,6 +174,14 @@ enum EPS {
   fundacion_salud_mia(
     'Fundación Salud Mía',
     'assets/eps/fundacion_salud_mia.png',
+  ),
+  fomag(
+    'Fondo Nacional de Prestaciones Sociales del Magisterio (EPS Profesores)',
+    'assets/eps/fomag.png',
+  ),
+  direccion_de_sanidad_policia_nacional(
+    'Dirección de Sanidad Policía Nacional',
+    'assets/eps/direccion_de_sanidad_policia_nacional.png',
   ),
   mallamas('Mallamas', 'assets/eps/mallamas.png'),
   nueva_s_a('Nueva S.A.', 'assets/eps/nueva_s_a.png'),
