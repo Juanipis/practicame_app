@@ -1,5 +1,8 @@
+import 'package:intl/intl.dart';
 import 'package:practicame_app/game/model/game_help.dart';
 import 'package:user_repository/user_repository.dart';
+
+DateFormat _formatDate = DateFormat("d 'de' MMMM 'de' y", 'es_MX');
 
 class GameInput {
   GameInput({
@@ -46,15 +49,15 @@ class GameInput {
       case UserAttributes.document:
         return user.document;
       case UserAttributes.birthDate:
-        return user.birthDate.toIso8601String(); // Convierte DateTime a String
+        return _formatDate.format(user.birthDate);
       case UserAttributes.age:
         return user.age.toString();
       case UserAttributes.eps:
         return user.eps.name;
       case UserAttributes.bloodType:
         return user.bloodType;
-      case UserAttributes.city:
-        return user.city;
+      case UserAttributes.municipality:
+        return user.municipality;
       case UserAttributes.address:
         return user.address;
       case UserAttributes.neighborhood:
