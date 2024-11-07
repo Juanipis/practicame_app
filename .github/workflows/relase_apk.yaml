@@ -1,0 +1,63 @@
+name: Release APK
+
+concurrency:
+  group: release_apk
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  # Variables para decodificar las credenciales en el entorno de GitHub
+  KEY_PROPERTIES_BASE64: ${{ secrets.KEY_PROPERTIES_BASE64 }}
+  KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+jobs:
+  release:
+    name: Build and Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode key.properties
+        run: |
+          echo "${{ env.KEY_PROPERTIES_BASE64 }}" | base64 --decode > android/key.properties
+        shell: bash
+
+      - name: Decode keystore
+        run: |
+          echo "${{ env.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+        shell: bash
+
+      - name: Build APK
+        run: flutter build apk --flavor production --target lib/main_production.dart
+
+      - name: Generate Semantic Version and Create Release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/app/outputs/flutter-apk/app-production-release.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean up
+        run: |
+          rm android/key.properties
+          rm android/app/upload-keystore.jks
+        shell: bash
