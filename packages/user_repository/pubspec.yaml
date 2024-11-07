@@ -1,0 +1,14 @@
+name: user_repository
+description: User Repository
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.4.0
+
+dev_dependencies:
+  very_good_analysis: ^6.0.0
+
+dependencies:
+  intl: ^0.19.0
+  shared_preferences: ^2.3.2
