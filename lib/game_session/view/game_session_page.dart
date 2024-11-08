@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game/view/game_page.dart';
 import 'package:practicame_app/game_session/cubit/game_session_cubit.dart';
+import 'package:practicame_app/game_session/view/finished_lesson.dart';
 import 'package:user_repository/user_repository.dart';
 
 class GameSessionPage extends StatelessWidget {
@@ -61,10 +62,9 @@ class GameSessionView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Center(
-                  child: Text(
-                    'Congratulations! You have completed all games with ${state.totalGoldStars} gold stars and ${state.totalGreenStars} green stars!',
-                  ),
+                FinishedLesson(
+                  totalGoldStars: state.totalGoldStars,
+                  totalGreenStars: state.totalGreenStars,
                 ),
               ],
             );
