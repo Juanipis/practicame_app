@@ -1,6 +1,5 @@
-import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:user_repository/src/model/user.dart';
 import 'package:user_repository/src/model/user_stars.dart';
 
@@ -8,25 +7,35 @@ import 'package:user_repository/src/model/user_stars.dart';
 /// Repository which manages user data.
 /// {@endtemplate}
 class UserRepository {
-  /// Key to store the user data.
-  static const String userKey = 'user_data';
+  /// Constructor privado para el patrón Singleton.
+  UserRepository._privateConstructor();
+  static UserRepository? _instance;
+  static Isar? _isar;
+
+  /// Método estático para inicializar el repositorio y asegurar que Isar esté listo.
+  static Future<UserRepository> init() async {
+    if (_instance == null) {
+      _instance = UserRepository._privateConstructor();
+      final dir = await getApplicationDocumentsDirectory();
+      _isar = await Isar.open(
+        [UserModelSchema, UserStarsSchema],
+        directory: dir.path,
+      );
+    }
+    return _instance!;
+  }
 
   /// Save the user data.
   Future<void> saveUser(UserModel user) async {
-    final prefs = await SharedPreferences.getInstance();
-    final userData = json.encode(user.toMap());
-    await prefs.setString(userKey, userData);
+    await _isar!.writeTxn(() async {
+      await _isar!.userModels.put(user);
+    });
   }
 
   /// Get the user data.
   Future<UserModel> getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userData = prefs.getString(userKey);
-    if (userData != null) {
-      final userMap = json.decode(userData) as Map<String, dynamic>;
-      return UserModel.fromMap(userMap);
-    }
-    return UserModel.defaultUser(); // Retorna un usuario por defecto
+    final user = await _isar!.userModels.where().findFirst();
+    return user ?? UserModel.defaultUser();
   }
 
   /// Update a user field.
@@ -42,21 +51,22 @@ class UserRepository {
 
   /// Verify if the onboarding process is complete.
   Future<bool> isOnboardingComplete() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey(userKey);
+    final user = await getUser();
+    return user.isOnboardingComplete;
   }
 
   /// Clear the user data.
   Future<void> clearUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(userKey);
+    await _isar!.writeTxn(() async {
+      await _isar!.userModels.clear();
+    });
   }
 
   /// Save the user stars data.
   Future<void> saveUserStars(UserStars userStars) async {
-    final prefs = await SharedPreferences.getInstance();
-    final userStarsData = json.encode(userStars.toMap());
-    await prefs.setString('user_stars', userStarsData);
+    await _isar!.writeTxn(() async {
+      await _isar!.userStars.put(userStars);
+    });
   }
 
   /// Append stars to the user.
@@ -81,12 +91,7 @@ class UserRepository {
 
   /// Get the user stars data.
   Future<UserStars> getUserStars() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userStarsData = prefs.getString('user_stars');
-    if (userStarsData != null) {
-      final userStarsMap = json.decode(userStarsData) as Map<String, dynamic>;
-      return UserStars.fromMap(userStarsMap);
-    }
-    return UserStars.defaultUserStars();
+    final userStars = await _isar!.userStars.where().findFirst();
+    return userStars ?? UserStars.defaultUserStars();
   }
 }

@@ -122,6 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     emergencyContactName: _emergencyContactNameController.text,
                     emergencyContactPhone:
                         _emergencyContactPhoneController.text,
+                    isOnboardingComplete: true,
                   );
                   context
                       .read<OnboardingCubit>()
