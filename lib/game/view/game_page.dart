@@ -138,7 +138,16 @@ class GameImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(image);
+    return Container(
+      constraints: const BoxConstraints(
+        maxHeight: 400,
+      ),
+      width: double.infinity,
+      child: Image.asset(
+        image,
+        fit: BoxFit.cover,
+      ),
+    );
   }
 }
 

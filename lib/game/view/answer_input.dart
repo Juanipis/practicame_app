@@ -11,7 +11,6 @@ class GameAnswerInputCol extends StatefulWidget {
 }
 
 class _GameAnswerInputColState extends State<GameAnswerInputCol> {
-  // Lista de controladores para cada letra
   late List<TextEditingController> _controllers;
 
   @override
@@ -20,7 +19,6 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
     _initializeControllers();
   }
 
-  // Inicializar controladores basados en la longitud de la respuesta correcta
   void _initializeControllers() {
     final correctAnswer = context.read<GameCubit>().state.correctAnswer;
     _controllers =
@@ -45,76 +43,80 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
 
         return Column(
           children: words.map((word) {
-            final row = Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: word.characters.map((letter) {
-                final currentIndex = globalIndex;
-                globalIndex++; // Increment the global index for each letter
+            final row = SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: word.characters.map((letter) {
+                  final currentIndex = globalIndex;
+                  globalIndex++; // Increment the global index for each letter
 
-                if (letter == ' ') {
-                  globalIndex++; // Skip the space in globalIndex
-                  return const SizedBox(
-                    width: 10,
-                  ); // Add spacing for visual separation
-                }
+                  if (letter == ' ') {
+                    globalIndex++; // Skip the space in globalIndex
+                    return const SizedBox(
+                      width: 10,
+                    ); // Add spacing for visual separation
+                  }
 
-                return KeyboardListener(
-                  focusNode: FocusNode(canRequestFocus: false),
-                  onKeyEvent: (value) {
-                    if (value.logicalKey == LogicalKeyboardKey.backspace &&
-                        _controllers[currentIndex].text.isEmpty) {
-                      FocusScope.of(context).previousFocus();
-                    }
-                  },
-                  child: SizedBox(
-                    width: 50,
-                    child: TextField(
-                      textAlign: TextAlign.center,
-                      controller: _controllers[currentIndex],
-                      maxLength: 2,
-                      buildCounter: (
-                        context, {
-                        required currentLength,
-                        required isFocused,
-                        required maxLength,
-                      }) {
-                        // Display the appropriate star based on its type
-                        if (state.stars[currentIndex] == StarType.gold) {
-                          return const Center(
-                            child: Icon(Icons.star, color: Colors.yellow),
-                          );
-                        } else if (state.stars[currentIndex] ==
-                            StarType.green) {
-                          return const Center(
-                            child: Icon(Icons.star, color: Colors.green),
-                          );
-                        } else if (state.stars[currentIndex] == StarType.red) {
-                          return const Center(
-                            child: Icon(Icons.star, color: Colors.red),
-                          );
-                        } else {
-                          return const Center(
-                            child: Icon(Icons.star, color: Colors.grey),
-                          );
-                        }
-                      },
-                      onChanged: (value) {
-                        if (value.isNotEmpty) {
-                          final newValue = value.substring(value.length - 1);
-                          _controllers[currentIndex].text = newValue;
-                          context
-                              .read<GameCubit>()
-                              .updateLetter(currentIndex, newValue);
-                          FocusScope.of(context).nextFocus();
-                        }
-                      },
-                      style: const TextStyle(fontSize: 24),
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
+                  return KeyboardListener(
+                    focusNode: FocusNode(canRequestFocus: false),
+                    onKeyEvent: (value) {
+                      if (value.logicalKey == LogicalKeyboardKey.backspace &&
+                          _controllers[currentIndex].text.isEmpty) {
+                        FocusScope.of(context).previousFocus();
+                      }
+                    },
+                    child: SizedBox(
+                      width: 50,
+                      child: TextField(
+                        textAlign: TextAlign.center,
+                        controller: _controllers[currentIndex],
+                        maxLength: 2,
+                        buildCounter: (
+                          context, {
+                          required currentLength,
+                          required isFocused,
+                          required maxLength,
+                        }) {
+                          // Display the appropriate star based on its type
+                          if (state.stars[currentIndex] == StarType.gold) {
+                            return const Center(
+                              child: Icon(Icons.star, color: Colors.yellow),
+                            );
+                          } else if (state.stars[currentIndex] ==
+                              StarType.green) {
+                            return const Center(
+                              child: Icon(Icons.star, color: Colors.green),
+                            );
+                          } else if (state.stars[currentIndex] ==
+                              StarType.red) {
+                            return const Center(
+                              child: Icon(Icons.star, color: Colors.red),
+                            );
+                          } else {
+                            return const Center(
+                              child: Icon(Icons.star, color: Colors.grey),
+                            );
+                          }
+                        },
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            final newValue = value.substring(value.length - 1);
+                            _controllers[currentIndex].text = newValue;
+                            context
+                                .read<GameCubit>()
+                                .updateLetter(currentIndex, newValue);
+                            FocusScope.of(context).nextFocus();
+                          }
+                        },
+                        style: const TextStyle(fontSize: 24),
+                        keyboardType: TextInputType.visiblePassword,
+                        textInputAction: TextInputAction.next,
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                }).toList(),
+              ),
             );
             globalIndex++; // Skip index for space between words
             return row;
