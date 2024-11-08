@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:practicame_app/app/view/app_theme.dart';
 
 class FinishedLesson extends StatefulWidget {
   const FinishedLesson({
@@ -119,9 +120,9 @@ class _FinishedLessonState extends State<FinishedLesson>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           '¡Felicidades! Has completado la lección',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         const SizedBox(height: 20),
         Stack(
@@ -147,6 +148,7 @@ class _FinishedLessonState extends State<FinishedLesson>
         ),
         const SizedBox(height: 20),
         ElevatedButton(
+          style: AppTheme.greenButtonStyle(),
           onPressed: () {
             Navigator.pop(context); // Cierra la pantalla
           },

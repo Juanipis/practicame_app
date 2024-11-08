@@ -52,7 +52,6 @@ class ContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logger = Logger();
     return BlocBuilder<GameCubit, GameState>(
       builder: (context, state) {
         final isButtonEnabled = state.stars
@@ -64,27 +63,52 @@ class ContinueButton extends StatelessWidget {
                   entry.value == StarType.gold || entry.value == StarType.green,
             );
 
-        logger
-          ..i('Stars: ${state.stars}')
-          ..i('Button enabled: $isButtonEnabled');
-
-        return IconButton(
-          icon: const Icon(Icons.arrow_forward),
-          onPressed: isButtonEnabled
-              ? () {
-                  logger
-                    ..i('Continue button pressed')
-                    ..i('Stars: ${state.stars}');
-                  onGameComplete(
-                    state.stars
-                        .where(
-                          (star) => star == StarType.gold,
-                        )
-                        .length,
-                    state.stars.where((star) => star == StarType.green).length,
-                  );
-                }
-              : null,
+        return Center(
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: isButtonEnabled
+                ? 1.0
+                : 0.5, // Transparencia si está deshabilitado
+            child: ElevatedButton(
+              onPressed: isButtonEnabled
+                  ? () {
+                      onGameComplete(
+                        state.stars
+                            .where((star) => star == StarType.gold)
+                            .length,
+                        state.stars
+                            .where((star) => star == StarType.green)
+                            .length,
+                      );
+                    }
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isButtonEnabled ? Colors.green : Colors.grey,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                shadowColor: Colors.black.withOpacity(0.2),
+                elevation: 8,
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Continuar',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward, size: 24),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
@@ -125,6 +149,7 @@ class GameBody extends StatelessWidget {
           if (gameInput.gameHelps != null)
             GameHelp(gameHelps: gameInput.gameHelps!),
           const GameAnswerInputCol(),
+          const SizedBox(height: 16),
           ContinueButton(onGameComplete: onGameComplete),
         ],
       ),
@@ -157,6 +182,10 @@ class GameQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(question);
+    final textStyle = Theme.of(context).textTheme.titleLarge;
+    return Text(
+      question, style: textStyle, // Usa el estilo del tema
+      textAlign: TextAlign.center,
+    );
   }
 }
