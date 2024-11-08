@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:practicame_app/app/view/app_theme.dart';
 import 'package:practicame_app/home/view/home_page.dart';
 import 'package:practicame_app/l10n/l10n.dart';
 import 'package:practicame_app/onboarding/cubit/onboarding_cubit.dart';
@@ -21,26 +21,7 @@ class App extends StatelessWidget {
       create: (context) =>
           OnboardingCubit(userRepository)..checkOnboardingStatus(),
       child: MaterialApp(
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          textTheme: GoogleFonts.chewyTextTheme(),
-          appBarTheme: const AppBarTheme(
-            backgroundColor:
-                Colors.white, //Theme.of(context).colorScheme.inversePrimary,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white, // Color de fondo
-              foregroundColor: Colors.black, // Color de texto
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: const BorderSide(width: 2),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-            ),
-          ),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.appTheme(),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         navigatorObservers: <NavigatorObserver>[routeObserver],
