@@ -58,9 +58,13 @@ jobs:
         id: tag
         run: |
           # Verificar si hay tags existentes
-          last_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
-          # Incrementa la versión del último tag usando SemVer (aquí asumimos un incremento de versión menor)
-          new_tag=$(echo $last_tag | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          last_tag=$(git tag --list | sort -V | tail -n 1)
+          if [ -z "$last_tag" ]; then
+            new_tag="v0.1.0" # Primer tag si no hay ninguno
+          else
+            # Incrementar versión menor en el último tag usando SemVer
+            new_tag=$(echo $last_tag | awk -F. '{$2 += 1; $3 = 0;} 1' | sed 's/ /./g')
+          fi
           echo "New tag is $new_tag"
           echo "tag=$new_tag" >> $GITHUB_ENV
 
@@ -68,6 +72,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          git fetch --tags # Asegurarse de tener los tags más recientes del remoto
           git tag ${{ env.tag }}
           git push origin ${{ env.tag }}
 
