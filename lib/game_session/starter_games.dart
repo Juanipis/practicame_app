@@ -98,4 +98,4 @@ GameInput game4 = GameInput(
 );
 
 // ------------------------------------------------------------------- //
-List<GameInput> starterGames = [game0, game1, game2, game3, game4];
+List<GameInput> starterGames = [game0];
