@@ -54,10 +54,28 @@ jobs:
       - name: Build APK
         run: flutter build apk --flavor production --target lib/main_production.dart
 
+      - name: Determine new version tag
+        id: tag
+        run: |
+          # Verificar si hay tags existentes
+          last_tag=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "v0.0.0")
+          # Incrementa la versión del último tag usando SemVer (aquí asumimos un incremento de versión menor)
+          new_tag=$(echo $last_tag | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          echo "New tag is $new_tag"
+          echo "tag=$new_tag" >> $GITHUB_ENV
+
+      - name: Create new Git tag
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git tag ${{ env.tag }}
+          git push origin ${{ env.tag }}
+
       - name: Generate Semantic Version and Create Release
         id: release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ env.tag }}
           files: build/app/outputs/flutter-apk/app-production-release.apk
           generate_release_notes: true
         env:

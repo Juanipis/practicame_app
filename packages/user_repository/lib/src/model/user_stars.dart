@@ -1,6 +1,11 @@
+import 'package:isar/isar.dart';
+
+part 'user_stars.g.dart';
+
 ///{@template user_stars_model}
 ///Model which represents the user stars data.
 ///{@endtemplate}
+@collection
 class UserStars {
   ///Constructor for the UserStars.
   UserStars({
@@ -32,9 +37,11 @@ class UserStars {
     };
   }
 
-  ///Factory method to create a default user stars.
+  Id id = Isar.autoIncrement; // ID autoincremental
+
+  /// Gold stars.
   final int goldStars;
 
-  ///Factory method to create a default user stars.
+  /// Green stars.
   final int greenStars;
 }

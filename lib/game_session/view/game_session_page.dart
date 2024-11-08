@@ -6,14 +6,15 @@ import 'package:practicame_app/game_session/cubit/game_session_cubit.dart';
 import 'package:user_repository/user_repository.dart';
 
 class GameSessionPage extends StatelessWidget {
-  GameSessionPage({required this.games, super.key});
+  const GameSessionPage(
+      {required this.games, required this.userRepository, super.key});
   final List<GameInput> games;
-  final _userRepository = UserRepository();
+  final UserRepository userRepository;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => GameSessionCubit(games, _userRepository),
+      create: (_) => GameSessionCubit(games, userRepository),
       child: const GameSessionView(),
     );
   }
@@ -48,20 +49,22 @@ class GameSessionView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.isCompleted) {
-            return Column(children: [
-              Center(
-                child: Text(
-                  'Lección Finalizada!',
-                  style: const TextStyle(fontSize: 24),
+            return Column(
+              children: [
+                const Center(
+                  child: Text(
+                    'Lección Finalizada!',
+                    style: TextStyle(fontSize: 24),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  'Congratulations! You have completed all games with ${state.totalGoldStars} gold stars and ${state.totalGreenStars} green stars!',
+                const SizedBox(height: 20),
+                Center(
+                  child: Text(
+                    'Congratulations! You have completed all games with ${state.totalGoldStars} gold stars and ${state.totalGreenStars} green stars!',
+                  ),
                 ),
-              )
-            ]);
+              ],
+            );
           } else {
             final currentGame = state.games[state.currentGameIndex];
             return GamePage(

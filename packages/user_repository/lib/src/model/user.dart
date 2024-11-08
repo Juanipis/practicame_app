@@ -1,10 +1,11 @@
-import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 
-DateFormat _formatDate = DateFormat("d 'de' MMMM 'de' y");
+part 'user.g.dart';
 
 /// {@template user_model}
 /// Mode which represents the user data.
 /// {@endtemplate}
+@collection
 class UserModel {
   /// Constructor for the UserModel.
   UserModel({
@@ -21,6 +22,7 @@ class UserModel {
     required this.emergencyContactName,
     required this.emergencyContactPhone,
     required this.lastName,
+    this.isOnboardingComplete = false,
   }) : fullName = '$name $lastName';
 
   /// Factory method to create a default user.
@@ -58,8 +60,11 @@ class UserModel {
       emergencyContactPhone: map['emergencyContactPhone'] as String,
       lastName: map['lastName'] as String,
       eps: EPS.values.firstWhere((element) => element.toString() == map['eps']),
+      isOnboardingComplete: map['isOnboardingComplete'] as bool,
     );
   }
+
+  Id id = Isar.autoIncrement; // ID autoincremental
 
   /// The name of the user.
   final String name;
@@ -100,7 +105,10 @@ class UserModel {
   /// The phone number of the emergency contact.
   final String emergencyContactPhone;
 
+  bool isOnboardingComplete;
+
   /// The EPS of the user.
+  @Enumerated(EnumType.name)
   final EPS eps;
 
   /// Map representation of the user.
@@ -110,7 +118,7 @@ class UserModel {
       'lastName': lastName,
       'fullName': fullName,
       'document': document,
-      'birthDate': _formatDate.format(birthDate),
+      'birthDate': birthDate.toIso8601String(),
       'age': age,
       'eps': eps.toString(),
       'bloodType': bloodType,
@@ -120,6 +128,7 @@ class UserModel {
       'phone': phone,
       'emergencyContactName': emergencyContactName,
       'emergencyContactPhone': emergencyContactPhone,
+      'isOnboardingComplete': isOnboardingComplete,
     };
   }
 }
