@@ -22,16 +22,31 @@ class _FinishedLessonState extends State<FinishedLesson>
   int _currentGoldStar = 0;
   int _currentGreenStar = 0;
 
-  final int starsPerRow = 5; // Número de estrellas por fila
-  final double starSize = 50; // Tamaño de las estrellas
-  final double spacing = 10; // Espaciado entre estrellas
+  // Propiedades dinámicas basadas en MediaQuery con valores predeterminados
+  int starsPerRow = 5; // Valor predeterminado
+  double starSize = 50; // Valor predeterminado
+  double spacing = 10; // Valor predeterminado
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
     _playSound();
-    _startFallingStars();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startFallingStars(); // Asegura que las estrellas se añadan después de la construcción inicial
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Cálculos basados en MediaQuery
+    final screenWidth = MediaQuery.of(context).size.width;
+    starsPerRow =
+        (screenWidth / 50).floor(); // Ajusta basado en el tamaño inicial
+    starSize = screenWidth / starsPerRow * 0.8; // Tamaño proporcional
+    spacing = screenWidth / starsPerRow * 0.2; // Espaciado proporcional
   }
 
   @override
@@ -68,13 +83,11 @@ class _FinishedLessonState extends State<FinishedLesson>
       duration: const Duration(milliseconds: 800),
     );
 
-    // Cálculo de posición en cuadrícula (X e Y)
     final row = index ~/ starsPerRow; // Fila en la cuadrícula
     final column = index % starsPerRow; // Columna en la cuadrícula
     final startX = column * (starSize + spacing);
     final startY = row * (starSize + spacing);
 
-    // Animación de caída desde arriba
     final animation = Tween<double>(
       begin: -100, // Inicia fuera de la pantalla
       end: startY,
@@ -115,7 +128,11 @@ class _FinishedLessonState extends State<FinishedLesson>
 
   @override
   Widget build(BuildContext context) {
-    final totalWidth = starsPerRow * starSize + (starsPerRow - 1) * spacing;
+    final totalStars = widget.totalGoldStars + widget.totalGreenStars;
+    final rows = (totalStars / starsPerRow).ceil();
+
+    // Altura total basada en filas y espaciado
+    final totalHeight = rows * (starSize + spacing);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -129,8 +146,8 @@ class _FinishedLessonState extends State<FinishedLesson>
           alignment: Alignment.topCenter,
           children: [
             SizedBox(
-              height: 300,
-              width: totalWidth,
+              height: totalHeight,
+              width: MediaQuery.of(context).size.width,
               child: Stack(
                 children: _fixedStars,
               ),
