@@ -55,7 +55,7 @@ const UserModelSchema = CollectionSchema(
     r'eps': PropertySchema(
       id: 7,
       name: r'eps',
-      type: IsarType.string,
+      type: IsarType.byte,
       enumMap: _UserModelepsEnumValueMap,
     ),
     r'fullName': PropertySchema(
@@ -63,33 +63,43 @@ const UserModelSchema = CollectionSchema(
       name: r'fullName',
       type: IsarType.string,
     ),
-    r'isOnboardingComplete': PropertySchema(
+    r'goldStars': PropertySchema(
       id: 9,
+      name: r'goldStars',
+      type: IsarType.long,
+    ),
+    r'greenStars': PropertySchema(
+      id: 10,
+      name: r'greenStars',
+      type: IsarType.long,
+    ),
+    r'isOnboardingComplete': PropertySchema(
+      id: 11,
       name: r'isOnboardingComplete',
       type: IsarType.bool,
     ),
     r'lastName': PropertySchema(
-      id: 10,
+      id: 12,
       name: r'lastName',
       type: IsarType.string,
     ),
     r'municipality': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'municipality',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 12,
+      id: 14,
       name: r'name',
       type: IsarType.string,
     ),
     r'neighborhood': PropertySchema(
-      id: 13,
+      id: 15,
       name: r'neighborhood',
       type: IsarType.string,
     ),
     r'phone': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'phone',
       type: IsarType.string,
     )
@@ -119,7 +129,6 @@ int _userModelEstimateSize(
   bytesCount += 3 + object.document.length * 3;
   bytesCount += 3 + object.emergencyContactName.length * 3;
   bytesCount += 3 + object.emergencyContactPhone.length * 3;
-  bytesCount += 3 + object.eps.name.length * 3;
   bytesCount += 3 + object.fullName.length * 3;
   bytesCount += 3 + object.lastName.length * 3;
   bytesCount += 3 + object.municipality.length * 3;
@@ -142,14 +151,16 @@ void _userModelSerialize(
   writer.writeString(offsets[4], object.document);
   writer.writeString(offsets[5], object.emergencyContactName);
   writer.writeString(offsets[6], object.emergencyContactPhone);
-  writer.writeString(offsets[7], object.eps.name);
+  writer.writeByte(offsets[7], object.eps.index);
   writer.writeString(offsets[8], object.fullName);
-  writer.writeBool(offsets[9], object.isOnboardingComplete);
-  writer.writeString(offsets[10], object.lastName);
-  writer.writeString(offsets[11], object.municipality);
-  writer.writeString(offsets[12], object.name);
-  writer.writeString(offsets[13], object.neighborhood);
-  writer.writeString(offsets[14], object.phone);
+  writer.writeLong(offsets[9], object.goldStars);
+  writer.writeLong(offsets[10], object.greenStars);
+  writer.writeBool(offsets[11], object.isOnboardingComplete);
+  writer.writeString(offsets[12], object.lastName);
+  writer.writeString(offsets[13], object.municipality);
+  writer.writeString(offsets[14], object.name);
+  writer.writeString(offsets[15], object.neighborhood);
+  writer.writeString(offsets[16], object.phone);
 }
 
 UserModel _userModelDeserialize(
@@ -166,14 +177,16 @@ UserModel _userModelDeserialize(
     document: reader.readString(offsets[4]),
     emergencyContactName: reader.readString(offsets[5]),
     emergencyContactPhone: reader.readString(offsets[6]),
-    eps: _UserModelepsValueEnumMap[reader.readStringOrNull(offsets[7])] ??
+    eps: _UserModelepsValueEnumMap[reader.readByteOrNull(offsets[7])] ??
         EPS.aliansalud_entidad_promotora_de_salud_s_a,
-    isOnboardingComplete: reader.readBoolOrNull(offsets[9]) ?? false,
-    lastName: reader.readString(offsets[10]),
-    municipality: reader.readString(offsets[11]),
-    name: reader.readString(offsets[12]),
-    neighborhood: reader.readString(offsets[13]),
-    phone: reader.readString(offsets[14]),
+    goldStars: reader.readLongOrNull(offsets[9]) ?? 0,
+    greenStars: reader.readLongOrNull(offsets[10]) ?? 0,
+    isOnboardingComplete: reader.readBoolOrNull(offsets[11]) ?? false,
+    lastName: reader.readString(offsets[12]),
+    municipality: reader.readString(offsets[13]),
+    name: reader.readString(offsets[14]),
+    neighborhood: reader.readString(offsets[15]),
+    phone: reader.readString(offsets[16]),
   );
   object.id = id;
   return object;
@@ -201,21 +214,25 @@ P _userModelDeserializeProp<P>(
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (_UserModelepsValueEnumMap[reader.readStringOrNull(offset)] ??
+      return (_UserModelepsValueEnumMap[reader.readByteOrNull(offset)] ??
           EPS.aliansalud_entidad_promotora_de_salud_s_a) as P;
     case 8:
       return (reader.readString(offset)) as P;
     case 9:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 10:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 11:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 12:
       return (reader.readString(offset)) as P;
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
+      return (reader.readString(offset)) as P;
+    case 15:
+      return (reader.readString(offset)) as P;
+    case 16:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -223,58 +240,50 @@ P _userModelDeserializeProp<P>(
 }
 
 const _UserModelepsEnumValueMap = {
-  r'aliansalud_entidad_promotora_de_salud_s_a':
-      r'aliansalud_entidad_promotora_de_salud_s_a',
-  r'anaswayuu': r'anaswayuu',
-  r'asociacion_indigena_del_cauca': r'asociacion_indigena_del_cauca',
-  r'asociacion_mutual_ser_empresa_solidaria_de_salud':
-      r'asociacion_mutual_ser_empresa_solidaria_de_salud',
-  r'capital_salud': r'capital_salud',
-  r'capresoca': r'capresoca',
-  r'comfenalco_valle': r'comfenalco_valle',
-  r'compensar': r'compensar',
-  r'famisanar_ltda': r'famisanar_ltda',
-  r'sanitas_s_a': r'sanitas_s_a',
-  r'convida': r'convida',
-  r'servicio_occidental_de_salud_s_a': r'servicio_occidental_de_salud_s_a',
-  r'medicina_prepagada_suramericana_s_a':
-      r'medicina_prepagada_suramericana_s_a',
-  r'fundacion_salud_mia': r'fundacion_salud_mia',
-  r'fomag': r'fomag',
-  r'direccion_de_sanidad_policia_nacional':
-      r'direccion_de_sanidad_policia_nacional',
-  r'mallamas': r'mallamas',
-  r'nueva_s_a': r'nueva_s_a',
-  r'salud_total_s_a': r'salud_total_s_a',
-  r'saludvida_s_a': r'saludvida_s_a',
-  r'savia_salud': r'savia_salud',
+  'aliansalud_entidad_promotora_de_salud_s_a': 0,
+  'anaswayuu': 1,
+  'asociacion_indigena_del_cauca': 2,
+  'asociacion_mutual_ser_empresa_solidaria_de_salud': 3,
+  'capital_salud': 4,
+  'capresoca': 5,
+  'comfenalco_valle': 6,
+  'compensar': 7,
+  'famisanar_ltda': 8,
+  'sanitas_s_a': 9,
+  'convida': 10,
+  'servicio_occidental_de_salud_s_a': 11,
+  'medicina_prepagada_suramericana_s_a': 12,
+  'fundacion_salud_mia': 13,
+  'fomag': 14,
+  'direccion_de_sanidad_policia_nacional': 15,
+  'mallamas': 16,
+  'nueva_s_a': 17,
+  'salud_total_s_a': 18,
+  'saludvida_s_a': 19,
+  'savia_salud': 20,
 };
 const _UserModelepsValueEnumMap = {
-  r'aliansalud_entidad_promotora_de_salud_s_a':
-      EPS.aliansalud_entidad_promotora_de_salud_s_a,
-  r'anaswayuu': EPS.anaswayuu,
-  r'asociacion_indigena_del_cauca': EPS.asociacion_indigena_del_cauca,
-  r'asociacion_mutual_ser_empresa_solidaria_de_salud':
-      EPS.asociacion_mutual_ser_empresa_solidaria_de_salud,
-  r'capital_salud': EPS.capital_salud,
-  r'capresoca': EPS.capresoca,
-  r'comfenalco_valle': EPS.comfenalco_valle,
-  r'compensar': EPS.compensar,
-  r'famisanar_ltda': EPS.famisanar_ltda,
-  r'sanitas_s_a': EPS.sanitas_s_a,
-  r'convida': EPS.convida,
-  r'servicio_occidental_de_salud_s_a': EPS.servicio_occidental_de_salud_s_a,
-  r'medicina_prepagada_suramericana_s_a':
-      EPS.medicina_prepagada_suramericana_s_a,
-  r'fundacion_salud_mia': EPS.fundacion_salud_mia,
-  r'fomag': EPS.fomag,
-  r'direccion_de_sanidad_policia_nacional':
-      EPS.direccion_de_sanidad_policia_nacional,
-  r'mallamas': EPS.mallamas,
-  r'nueva_s_a': EPS.nueva_s_a,
-  r'salud_total_s_a': EPS.salud_total_s_a,
-  r'saludvida_s_a': EPS.saludvida_s_a,
-  r'savia_salud': EPS.savia_salud,
+  0: EPS.aliansalud_entidad_promotora_de_salud_s_a,
+  1: EPS.anaswayuu,
+  2: EPS.asociacion_indigena_del_cauca,
+  3: EPS.asociacion_mutual_ser_empresa_solidaria_de_salud,
+  4: EPS.capital_salud,
+  5: EPS.capresoca,
+  6: EPS.comfenalco_valle,
+  7: EPS.compensar,
+  8: EPS.famisanar_ltda,
+  9: EPS.sanitas_s_a,
+  10: EPS.convida,
+  11: EPS.servicio_occidental_de_salud_s_a,
+  12: EPS.medicina_prepagada_suramericana_s_a,
+  13: EPS.fundacion_salud_mia,
+  14: EPS.fomag,
+  15: EPS.direccion_de_sanidad_policia_nacional,
+  16: EPS.mallamas,
+  17: EPS.nueva_s_a,
+  18: EPS.salud_total_s_a,
+  19: EPS.saludvida_s_a,
+  20: EPS.savia_salud,
 };
 
 Id _userModelGetId(UserModel object) {
@@ -1143,14 +1152,11 @@ extension UserModelQueryFilter
   }
 
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsEqualTo(
-    EPS value, {
-    bool caseSensitive = true,
-  }) {
+      EPS value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'eps',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
@@ -1158,14 +1164,12 @@ extension UserModelQueryFilter
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsGreaterThan(
     EPS value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'eps',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
@@ -1173,14 +1177,12 @@ extension UserModelQueryFilter
   QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsLessThan(
     EPS value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'eps',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
@@ -1190,7 +1192,6 @@ extension UserModelQueryFilter
     EPS upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -1199,75 +1200,6 @@ extension UserModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'eps',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'eps',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'eps',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'eps',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'eps',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> epsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'eps',
-        value: '',
       ));
     });
   }
@@ -1399,6 +1331,114 @@ extension UserModelQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'fullName',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> goldStarsEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'goldStars',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      goldStarsGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'goldStars',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> goldStarsLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'goldStars',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> goldStarsBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'goldStars',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> greenStarsEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'greenStars',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition>
+      greenStarsGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'greenStars',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> greenStarsLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'greenStars',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterFilterCondition> greenStarsBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'greenStars',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
       ));
     });
   }
@@ -2247,6 +2287,30 @@ extension UserModelQuerySortBy on QueryBuilder<UserModel, UserModel, QSortBy> {
     });
   }
 
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByGoldStars() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'goldStars', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByGoldStarsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'goldStars', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByGreenStars() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'greenStars', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> sortByGreenStarsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'greenStars', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserModel, UserModel, QAfterSortBy>
       sortByIsOnboardingComplete() {
     return QueryBuilder.apply(this, (query) {
@@ -2436,6 +2500,30 @@ extension UserModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByGoldStars() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'goldStars', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByGoldStarsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'goldStars', Sort.desc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByGreenStars() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'greenStars', Sort.asc);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QAfterSortBy> thenByGreenStarsDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'greenStars', Sort.desc);
+    });
+  }
+
   QueryBuilder<UserModel, UserModel, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -2574,10 +2662,9 @@ extension UserModelQueryWhereDistinct
     });
   }
 
-  QueryBuilder<UserModel, UserModel, QDistinct> distinctByEps(
-      {bool caseSensitive = true}) {
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByEps() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'eps', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'eps');
     });
   }
 
@@ -2585,6 +2672,18 @@ extension UserModelQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'fullName', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByGoldStars() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'goldStars');
+    });
+  }
+
+  QueryBuilder<UserModel, UserModel, QDistinct> distinctByGreenStars() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'greenStars');
     });
   }
 
@@ -2692,6 +2791,18 @@ extension UserModelQueryProperty
   QueryBuilder<UserModel, String, QQueryOperations> fullNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'fullName');
+    });
+  }
+
+  QueryBuilder<UserModel, int, QQueryOperations> goldStarsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'goldStars');
+    });
+  }
+
+  QueryBuilder<UserModel, int, QQueryOperations> greenStarsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'greenStars');
     });
   }
 
