@@ -6,11 +6,13 @@ class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({
     required this.isTeacherMode,
     required this.onProfileCompleted,
+    this.initialStudent,
     super.key,
   });
 
   final bool isTeacherMode;
-  final Function(UserModel) onProfileCompleted;
+  final void Function(UserModel) onProfileCompleted;
+  final UserModel? initialStudent;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -37,6 +39,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   EPS? selectedEPS;
   DateTime? selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialStudent != null) {
+      final student = widget.initialStudent!;
+      nameController.text = student.name;
+      lastNameController.text = student.lastName;
+      documentController.text = student.document;
+      birthDateController.text = student.birthDate.toString();
+      ageController.text = student.age.toString();
+      bloodTypeController.text = student.bloodType;
+      municipalityController.text = student.municipality;
+      addressController.text = student.address;
+      neighborhoodController.text = student.neighborhood;
+      phoneController.text = student.phone;
+      emergencyContactNameController.text = student.emergencyContactName;
+      emergencyContactPhoneController.text = student.emergencyContactPhone;
+      selectedEPS = student.eps;
+      selectedDate = student.birthDate;
+    }
+  }
 
   @override
   void dispose() {
@@ -104,6 +128,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       emergencyContactPhone: emergencyContactPhoneController.text,
       isOnboardingComplete: true,
     );
+    if (widget.initialStudent != null) {
+      user.id = widget.initialStudent!.id;
+    }
 
     widget.onProfileCompleted(user);
   }

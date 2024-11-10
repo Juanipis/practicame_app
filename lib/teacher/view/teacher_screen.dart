@@ -76,6 +76,27 @@ class TeacherView extends StatelessWidget {
                       style: const TextStyle(fontSize: 14),
                     ),
                     onTap: () => _navigateToHome(context, student.id),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () async {
+                        final result =
+                            await Navigator.of(context).push<UserModel?>(
+                          MaterialPageRoute<UserModel>(
+                            builder: (_) => OnboardingScreen(
+                              isTeacherMode: true,
+                              onProfileCompleted: (updatedStudent) {
+                                teacherCubit.updateStudent(updatedStudent);
+                                Navigator.of(context).pop(updatedStudent);
+                              },
+                              initialStudent: student,
+                            ),
+                          ),
+                        );
+                        if (result != null) {
+                          await teacherCubit.loadStudents();
+                        }
+                      },
+                    ),
                   ),
                 );
               },

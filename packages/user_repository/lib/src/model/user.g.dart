@@ -181,6 +181,7 @@ UserModel _userModelDeserialize(
         EPS.aliansalud_entidad_promotora_de_salud_s_a,
     goldStars: reader.readLongOrNull(offsets[9]) ?? 0,
     greenStars: reader.readLongOrNull(offsets[10]) ?? 0,
+    id: id,
     isOnboardingComplete: reader.readBoolOrNull(offsets[11]) ?? false,
     lastName: reader.readString(offsets[12]),
     municipality: reader.readString(offsets[13]),
@@ -188,7 +189,6 @@ UserModel _userModelDeserialize(
     neighborhood: reader.readString(offsets[15]),
     phone: reader.readString(offsets[16]),
   );
-  object.id = id;
   return object;
 }
 

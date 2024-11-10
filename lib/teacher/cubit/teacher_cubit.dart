@@ -25,6 +25,15 @@ class TeacherCubit extends Cubit<TeacherState> {
     }
   }
 
+  Future<void> updateStudent(UserModel student) async {
+    try {
+      await userRepository.updateUser(student);
+      await loadStudents();
+    } catch (e) {
+      emit(TeacherError(e.toString()));
+    }
+  }
+
   Future<void> setActiveStudent(int studentId) async {
     try {
       await userRepository.setActiveUser(studentId);

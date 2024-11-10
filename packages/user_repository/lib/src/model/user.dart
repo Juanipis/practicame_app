@@ -22,6 +22,7 @@ class UserModel {
     required this.emergencyContactName,
     required this.emergencyContactPhone,
     required this.lastName,
+    this.id = Isar.autoIncrement,
     this.isOnboardingComplete = false,
     this.goldStars = 0,
     this.greenStars = 0,
@@ -46,7 +47,7 @@ class UserModel {
     );
   }
 
-  Id id = Isar.autoIncrement; // ID autoincremental
+  Id id; // Expose the ID field
 
   /// The name of the user.
   final String name;
@@ -103,6 +104,7 @@ class UserModel {
   /// Map representation of the user.
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'lastName': lastName,
       'fullName': fullName,
@@ -125,6 +127,7 @@ class UserModel {
 
   /// Copy of the user with the new values.
   UserModel copyWith({
+    Id? id,
     String? name,
     String? lastName,
     String? document,
@@ -143,6 +146,7 @@ class UserModel {
     int? greenStars,
   }) {
     return UserModel(
+      id: id ?? this.id,
       name: name ?? this.name,
       lastName: lastName ?? this.lastName,
       document: document ?? this.document,
@@ -208,7 +212,7 @@ enum EPS {
     'assets/eps/servicio_occidental_de_salud_s_a.webp',
   ),
   medicina_prepagada_suramericana_s_a(
-    'Medicina Prepagada Suramericana S.A.',
+    'Sura EPS',
     'assets/eps/medicina_prepagada_suramericana_s_a.png',
   ),
   fundacion_salud_mia(
