@@ -8,6 +8,7 @@ class FinishedLesson extends StatefulWidget {
     required this.totalGreenStars,
     super.key,
   });
+
   final int totalGoldStars;
   final int totalGreenStars;
 
@@ -19,13 +20,15 @@ class _FinishedLessonState extends State<FinishedLesson>
     with TickerProviderStateMixin {
   late AudioPlayer _audioPlayer;
   final List<Widget> _fixedStars = [];
+  final List<AnimationController> _controllers = [];
+  bool _isDisposed = false;
   int _currentGoldStar = 0;
   int _currentGreenStar = 0;
 
-  // Propiedades dinámicas basadas en MediaQuery con valores predeterminados
-  int starsPerRow = 5; // Valor predeterminado
-  double starSize = 50; // Valor predeterminado
-  double spacing = 10; // Valor predeterminado
+  // Dynamic properties based on MediaQuery with default values
+  int starsPerRow = 5; // Default value
+  double starSize = 50; // Default value
+  double spacing = 10; // Default value
 
   @override
   void initState() {
@@ -33,7 +36,7 @@ class _FinishedLessonState extends State<FinishedLesson>
     _audioPlayer = AudioPlayer();
     _playSound();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startFallingStars(); // Asegura que las estrellas se añadan después de la construcción inicial
+      _startFallingStars(); // Ensure stars are added after initial build
     });
   }
 
@@ -41,36 +44,51 @@ class _FinishedLessonState extends State<FinishedLesson>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Cálculos basados en MediaQuery
+    // Calculate based on MediaQuery
     final screenWidth = MediaQuery.of(context).size.width;
-    starsPerRow =
-        (screenWidth / 50).floor(); // Ajusta basado en el tamaño inicial
-    starSize = screenWidth / starsPerRow * 0.8; // Tamaño proporcional
-    spacing = screenWidth / starsPerRow * 0.2; // Espaciado proporcional
+    starsPerRow = (screenWidth / 50).floor(); // Adjust based on initial size
+    starSize = screenWidth / starsPerRow * 0.8; // Proportional size
+    spacing = screenWidth / starsPerRow * 0.2; // Proportional spacing
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
+
+    // Dispose all remaining animation controllers
+    for (final controller in List.of(_controllers)) {
+      controller.dispose();
+    }
+    _controllers.clear(); // Clear the list after disposal
+
+    // Stop audio playback safely
+    _audioPlayer.stop();
     _audioPlayer.dispose();
+
     super.dispose();
   }
 
   Future<void> _playSound() async {
+    if (_isDisposed) return;
     await _audioPlayer.play(AssetSource('sounds/win.wav'));
   }
 
   Future<void> _startFallingStars() async {
-    // Añadimos las estrellas doradas una por una
+    // Add gold stars one by one
     for (var i = 0; i < widget.totalGoldStars; i++) {
+      if (_isDisposed) return; // Stop if widget is disposed
       await _addFallingStar(Colors.yellow, i);
+      if (_isDisposed) return;
       setState(() {
         _currentGoldStar++;
       });
     }
 
-    // Añadimos las estrellas verdes una por una
+    // Add green stars one by one
     for (var i = 0; i < widget.totalGreenStars; i++) {
+      if (_isDisposed) return; // Stop if widget is disposed
       await _addFallingStar(Colors.green, i + widget.totalGoldStars);
+      if (_isDisposed) return;
       setState(() {
         _currentGreenStar++;
       });
@@ -83,13 +101,16 @@ class _FinishedLessonState extends State<FinishedLesson>
       duration: const Duration(milliseconds: 800),
     );
 
-    final row = index ~/ starsPerRow; // Fila en la cuadrícula
-    final column = index % starsPerRow; // Columna en la cuadrícula
+    // Track the controller for safe disposal
+    _controllers.add(controller);
+
+    final row = index ~/ starsPerRow; // Row in the grid
+    final column = index % starsPerRow; // Column in the grid
     final startX = column * (starSize + spacing);
     final startY = row * (starSize + spacing);
 
     final animation = Tween<double>(
-      begin: -100, // Inicia fuera de la pantalla
+      begin: -100, // Start outside the screen
       end: startY,
     ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
 
@@ -104,13 +125,17 @@ class _FinishedLessonState extends State<FinishedLesson>
       },
     );
 
+    if (_isDisposed) return;
+
     setState(() {
       _fixedStars.add(fallingStar);
     });
 
     await controller.forward();
 
-    // Una vez finalizada, fija la estrella
+    if (_isDisposed) return;
+
+    // Once finished, fix the star in place
     setState(() {
       _fixedStars
         ..remove(fallingStar)
@@ -123,7 +148,8 @@ class _FinishedLessonState extends State<FinishedLesson>
         );
     });
 
-    controller.dispose();
+    controller.dispose(); // Dispose controller after use
+    _controllers.remove(controller); // Remove the controller from the list
   }
 
   @override
@@ -131,7 +157,7 @@ class _FinishedLessonState extends State<FinishedLesson>
     final totalStars = widget.totalGoldStars + widget.totalGreenStars;
     final rows = (totalStars / starsPerRow).ceil();
 
-    // Altura total basada en filas y espaciado
+    // Total height based on rows and spacing
     final totalHeight = rows * (starSize + spacing);
 
     return Column(
@@ -155,19 +181,23 @@ class _FinishedLessonState extends State<FinishedLesson>
           ],
         ),
         const SizedBox(height: 20),
-        Text(
-          'Estrellas Doradas: $_currentGoldStar',
-          style: const TextStyle(fontSize: 18),
+        Row(
+          children: [
+            Text('Estrellas doradas ${widget.totalGoldStars}'),
+            const Icon(Icons.star, color: Colors.yellow),
+          ],
         ),
-        Text(
-          'Estrellas Verdes: $_currentGreenStar',
-          style: const TextStyle(fontSize: 18),
+        Row(
+          children: [
+            Text('Estrellas verdes ${widget.totalGreenStars}'),
+            const Icon(Icons.star, color: Colors.green),
+          ],
         ),
         const SizedBox(height: 20),
         ElevatedButton(
           style: AppTheme.greenButtonStyle(),
           onPressed: () {
-            Navigator.pop(context); // Cierra la pantalla
+            Navigator.pop(context); // Close the screen
           },
           child: const Text('Finalizar'),
         ),

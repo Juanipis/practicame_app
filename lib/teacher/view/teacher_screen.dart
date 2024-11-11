@@ -27,7 +27,7 @@ class TeacherView extends StatelessWidget {
   Future<void> _navigateToHome(BuildContext context, int studentId) async {
     final teacherCubit = context.read<TeacherCubit>();
     await teacherCubit.setActiveStudent(studentId);
-    Navigator.of(context).pushReplacement(
+    await Navigator.of(context).pushReplacement(
       MaterialPageRoute<HomeScreen>(
         builder: (_) => HomeScreen(userRepository: userRepository),
       ),
