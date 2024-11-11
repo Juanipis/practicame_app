@@ -39,7 +39,7 @@ class AppTheme {
           textStyle: GoogleFonts.chewy(fontSize: 18),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(color: Colors.black, width: 2),
+            side: const BorderSide(width: 2),
           ),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
         ),
@@ -53,7 +53,7 @@ class AppTheme {
     return ElevatedButton.styleFrom(
       backgroundColor: Colors.green,
       foregroundColor: Colors.white,
-      textStyle: GoogleFonts.chewy(fontSize: 18),
+      textStyle: GoogleFonts.comicNeue(fontSize: 18),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

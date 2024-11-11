@@ -182,12 +182,14 @@ class _FinishedLessonState extends State<FinishedLesson>
         ),
         const SizedBox(height: 20),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Estrellas doradas ${widget.totalGoldStars}'),
             const Icon(Icons.star, color: Colors.yellow),
           ],
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Estrellas verdes ${widget.totalGreenStars}'),
             const Icon(Icons.star, color: Colors.green),

@@ -31,6 +31,36 @@ class GameSessionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            //show dialo to confirm exit
+            showDialog<void>(
+              context: context,
+              builder: (_) => AlertDialog(
+                title: const Text('Salir de la sesión de juego'),
+                content: const Text(
+                  '¿Estás seguro de que deseas salir de la sesión de juego?, Perderás tu progreso actual.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Cierra el diálogo
+                      Navigator.pop(context); // Regresa a la pantalla anterior
+                    },
+                    child: const Text('Sí'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Cierra el diálogo
+                    },
+                    child: const Text('No'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
         title: const Text('Sesión de juego'),
         actions: [
           BlocBuilder<GameSessionCubit, GameSessionState>(
