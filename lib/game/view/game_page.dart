@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:practicame_app/game/cubit/game_cubit.dart';
 import 'package:practicame_app/game/model/game_input.dart';
 import 'package:practicame_app/game/view/answer_input.dart';
@@ -92,18 +93,18 @@ class ContinueButton extends StatelessWidget {
                 shadowColor: Colors.black.withOpacity(0.2),
                 elevation: 8,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     'Continuar',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: GoogleFonts.comicNeue().fontFamily,
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward, size: 24),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward, size: 24),
                 ],
               ),
             ),
