@@ -3,36 +3,90 @@ import 'package:user_repository/user_repository.dart';
 
 class OnboardingCubit extends Cubit<OnboardingState> {
   OnboardingCubit(this._userRepository) : super(OnboardingInitial());
+
   final UserRepository _userRepository;
 
-  Future<void> checkOnboardingStatus() async {
-    final isComplete = await _userRepository.isOnboardingComplete();
-    if (isComplete) {
-      emit(OnboardingCompleted());
+  /// Inicializa el estado del modo de la aplicación.
+  Future<void> initializeAppMode() async {
+    final isFirstTime = await _userRepository.isFirstTime();
+    if (isFirstTime) {
+      emit(OnboardingChooseMode());
     } else {
-      emit(OnboardingNotCompleted());
+      final mode = await _userRepository.getAppMode(); // Usa await aquí
+      if (mode == AppMode.teacher) {
+        emit(OnboardingTeacherMode());
+      } else if (mode == AppMode.student) {
+        final user = await _userRepository.getStudentProfile();
+        if (user != null && user.isOnboardingComplete) {
+          emit(OnboardingCompleted());
+        } else {
+          emit(OnboardingStudentMode());
+        }
+      }
     }
   }
 
-  Future<void> completeOnboarding(UserModel user) async {
-    await _userRepository.saveUser(user);
+  /// Selecciona el modo de la aplicación.
+  Future<void> selectAppMode(AppMode mode) async {
+    await _userRepository.setAppMode(mode);
+    if (mode == AppMode.teacher) {
+      emit(OnboardingTeacherMode());
+    } else if (mode == AppMode.student) {
+      final user = await _userRepository.getStudentProfile();
+      if (user != null && user.isOnboardingComplete) {
+        emit(OnboardingCompleted());
+      } else {
+        emit(OnboardingStudentMode());
+      }
+    }
+  }
+
+  /// Añade un estudiante en modo maestro.
+  Future<void> addStudent(UserModel user) async {
+    await _userRepository.addUser(user);
+    emit(OnboardingStudentAdded());
+  }
+
+  /// Completa el perfil del estudiante en modo estudiante.
+  Future<void> completeStudentProfile(UserModel user) async {
+    await _userRepository.updateUser(user);
+    await _userRepository.setActiveUser(user.id); // Marca como activo.
     emit(OnboardingCompleted());
   }
 
-  Future<void> updateUserField(String field, dynamic value) async {
-    await _userRepository.updateUserField(field, value);
+  /// Selecciona un estudiante activo en modo maestro.
+  Future<void> selectStudent(int userId) async {
+    await _userRepository.setActiveUser(userId);
+    final selectedStudent = await _userRepository.getSelectedStudent();
+    if (selectedStudent != null) {
+      emit(OnboardingStudentSelected(selectedStudent));
+    }
   }
 
-  Future<void> saveUserData({required UserModel userModel}) async {
-    await _userRepository.saveUser(userModel);
-    emit(OnboardingCompleted());
+  /// Limpia todos los usuarios y restablece el estado inicial.
+  Future<void> resetApp() async {
+    await _userRepository.clearAllUsers();
+    emit(OnboardingInitial());
   }
 }
 
+/// Estados del cubit para manejar diferentes flujos de Onboarding.
 abstract class OnboardingState {}
 
 class OnboardingInitial extends OnboardingState {}
 
-class OnboardingNotCompleted extends OnboardingState {}
+class OnboardingChooseMode extends OnboardingState {}
+
+class OnboardingTeacherMode extends OnboardingState {}
+
+class OnboardingStudentMode extends OnboardingState {}
 
 class OnboardingCompleted extends OnboardingState {}
+
+class OnboardingStudentAdded extends OnboardingState {}
+
+class OnboardingStudentSelected extends OnboardingState {
+  OnboardingStudentSelected(this.selectedStudent);
+
+  final UserModel selectedStudent;
+}

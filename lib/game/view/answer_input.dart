@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:practicame_app/game/cubit/game_cubit.dart';
 
 class GameAnswerInputCol extends StatefulWidget {
@@ -109,7 +110,10 @@ class _GameAnswerInputColState extends State<GameAnswerInputCol> {
                             FocusScope.of(context).nextFocus();
                           }
                         },
-                        style: const TextStyle(fontSize: 24),
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontFamily: GoogleFonts.comicNeue().fontFamily,
+                        ),
                         keyboardType: TextInputType.visiblePassword,
                         textInputAction: TextInputAction.next,
                       ),
