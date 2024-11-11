@@ -19,6 +19,7 @@ class GameSessionCubit extends Cubit<GameSessionState> {
         ) {
     _initializeGames(games);
   }
+
   final UserRepository _userRepository;
 
   Future<void> _initializeGames(List<GameInput> games) async {
@@ -35,7 +36,12 @@ class GameSessionCubit extends Cubit<GameSessionState> {
     List<GameInput> games,
     UserRepository userRepository,
   ) async {
-    final user = await userRepository.getUser();
+    final user = await userRepository.getActiveUser();
+    if (user == null) {
+      _logger.e('No active user found.');
+      return games;
+    }
+
     return games.map((game) {
       final answer = game.getUserAttributeValue(user);
       _logger.d('Answer for game ${game.id}: $answer');
@@ -43,7 +49,7 @@ class GameSessionCubit extends Cubit<GameSessionState> {
     }).toList();
   }
 
-  void completeGame(int goldStars, int greenStars) {
+  Future<void> completeGame(int goldStars, int greenStars) async {
     final newTotalGoldStars = state.totalGoldStars + goldStars;
     final newTotalGreenStars = state.totalGreenStars + greenStars;
     final nextGameIndex = state.currentGameIndex + 1;
@@ -57,10 +63,24 @@ class GameSessionCubit extends Cubit<GameSessionState> {
         ),
       );
     } else {
-      _userRepository.appendStars(
-        newTotalGoldStars,
-        newTotalGreenStars,
-      );
+      // Save stars to the active user
+      final activeUser = await _userRepository.getActiveUser();
+      if (activeUser != null) {
+        // Actualiza las estrellas del usuario activo sin crear un nuevo usuario
+        activeUser
+          ..goldStars += newTotalGoldStars
+          ..greenStars += newTotalGreenStars;
+
+        await _userRepository.updateUser(activeUser);
+
+        _logger.i(
+          'Stars updated for user ${activeUser.name}: '
+          'Gold: ${activeUser.goldStars}, Green: ${activeUser.greenStars}',
+        );
+      } else {
+        _logger.e('No active user found to update stars.');
+      }
+
       emit(
         state.copyWith(
           isCompleted: true,
@@ -82,6 +102,7 @@ class GameSessionState {
     required this.isLoading,
     this.isCompleted = false,
   });
+
   final List<GameInput> games;
   final int currentGameIndex;
   final int totalStars;
@@ -103,12 +124,19 @@ class GameSessionState {
       games: games ?? this.games,
       currentGameIndex: currentGameIndex ?? this.currentGameIndex,
       totalStars: totalStars ?? this.totalStars,
-      isCompleted: isCompleted ?? this.isCompleted,
       totalGoldStars: totalGoldStars ?? this.totalGoldStars,
       totalGreenStars: totalGreenStars ?? this.totalGreenStars,
+      isCompleted: isCompleted ?? this.isCompleted,
       isLoading: isLoading ?? this.isLoading,
     );
   }
 
-  List<Object> get props => [games, currentGameIndex, totalStars, isCompleted];
+  List<Object> get props => [
+        games,
+        currentGameIndex,
+        totalStars,
+        totalGoldStars,
+        totalGreenStars,
+        isCompleted,
+      ];
 }
