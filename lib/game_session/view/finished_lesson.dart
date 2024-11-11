@@ -98,7 +98,7 @@ class _FinishedLessonState extends State<FinishedLesson>
   Future<void> _addFallingStar(Color color, int index) async {
     final controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 300),
     );
 
     // Track the controller for safe disposal

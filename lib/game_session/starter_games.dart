@@ -23,7 +23,7 @@ GameInput game0 = GameInput(
 // ------------------------------------------------------------------- //
 GameHelps gameHelps1 = GameHelps(
   text:
-      'Es el número que aparece en tu cédula de ciudadanía, normalente empieza por 1',
+      'Es el número que aparece en tu cédula de ciudadanía, normalmente empieza por 1',
   images: [
     'assets/visual_helps/nuip1.png',
     'assets/visual_helps/nuip2.jpeg',
@@ -42,7 +42,7 @@ GameInput game1 = GameInput(
 );
 // ------------------------------------------------------------------- //
 GameHelps gameHelps2 = GameHelps(
-  text: 'Es la fecha en la que naciste, por ejemplo: 12 de diciembre de 2000',
+  text: 'Es la fecha en la que naciste, por ejemplo: 2000-12-6 (año-mes-día)',
   images: [
     'assets/visual_helps/birth_date1.png',
     'assets/visual_helps/birth_date2.webp',

@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:practicame_app/game/model/game_help.dart';
 import 'package:user_repository/user_repository.dart';
 
-DateFormat _formatDate = DateFormat("d 'de' MMMM 'de' y", 'es_MX');
+DateFormat _formatDate = DateFormat('y-MM-d', 'es_MX');
 
 class GameInput {
   GameInput({
