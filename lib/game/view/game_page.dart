@@ -54,61 +54,174 @@ class ContinueButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<GameCubit, GameState>(
       builder: (context, state) {
-        final isButtonEnabled = state.stars
-            .asMap()
-            .entries
-            .where((entry) => state.correctAnswer[entry.key] != ' ')
-            .every(
-              (entry) =>
-                  entry.value == StarType.gold || entry.value == StarType.green,
-            );
-
         return Center(
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: isButtonEnabled
-                ? 1.0
-                : 0.5, // Transparencia si está deshabilitado
-            child: ElevatedButton(
-              onPressed: isButtonEnabled
-                  ? () {
-                      onGameComplete(
-                        state.stars
-                            .where((star) => star == StarType.gold)
-                            .length,
-                        state.stars
-                            .where((star) => star == StarType.green)
-                            .length,
-                      );
-                    }
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isButtonEnabled ? Colors.green : Colors.grey,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                shadowColor: Colors.black.withOpacity(0.2),
-                elevation: 8,
+          child: ElevatedButton(
+            onPressed: () {
+              _showErrorDialog(context, state, onGameComplete);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Continuar',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontFamily: GoogleFonts.comicNeue().fontFamily,
-                    ),
+              shadowColor: Colors.black.withOpacity(0.2),
+              elevation: 8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Continuar',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontFamily: GoogleFonts.comicNeue().fontFamily,
                   ),
-                  const SizedBox(width: 8),
-                  const Icon(Icons.arrow_forward, size: 24),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward, size: 24),
+              ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(
+    BuildContext context,
+    GameState state,
+    void Function(int, int) onGameComplete,
+  ) {
+    final incorrectDetails = <String>[];
+    final emptyPositions = <int>[];
+
+    // Respuesta correcta sin modificar
+    final correctAnswer = state.correctAnswer;
+
+    // Verificar si `state.currentInput` está completamente vacío
+    final isCompletelyEmpty =
+        state.currentInput.every((input) => input.isEmpty);
+
+    // Reconstruir la respuesta del usuario respetando los espacios
+    final userAnswer = List.generate(correctAnswer.length, (i) {
+      if (correctAnswer[i] == ' ') {
+        return ' '; // Mantén el espacio en la posición correspondiente
+      }
+      if (i < state.currentInput.length) {
+        return state.currentInput[i]; // Accede al índice si existe
+      }
+      return ''; // Manejar índices fuera de rango
+    }).join();
+
+    // Si la entrada está vacía, no procesar errores ni faltantes
+    if (!isCompletelyEmpty) {
+      for (var i = 0; i < correctAnswer.length; i++) {
+        final correctAnswerChar = correctAnswer[i];
+        final userAnswerChar = i < state.currentInput.length
+            ? state.currentInput[i]
+            : ''; // Manejar índices fuera de rango
+
+        if (correctAnswerChar == ' ') {
+          continue; // Ignora espacios en la validación
+        }
+
+        if (userAnswerChar.isEmpty) {
+          emptyPositions.add(i + 1); // Posición legible (1-based index)
+        } else if (userAnswerChar.toLowerCase() !=
+            correctAnswerChar.toLowerCase()) {
+          incorrectDetails.add(
+            'Posición ${i + 1}: Ingresaste "$userAnswerChar" pero debería ser "$correctAnswerChar".',
+          );
+        }
+      }
+    }
+
+    // Crear el mensaje del diálogo
+    final errorMessage = StringBuffer();
+
+    if (isCompletelyEmpty) {
+      errorMessage.writeln('No ingresaste ninguna respuesta.');
+    } else {
+      if (incorrectDetails.isNotEmpty) {
+        errorMessage.writeln('Errores encontrados:');
+        for (final detail in incorrectDetails) {
+          errorMessage.writeln('- $detail');
+        }
+      }
+      if (emptyPositions.isNotEmpty) {
+        errorMessage.writeln(
+          '\nFaltan letras en las posiciones: ${emptyPositions.join(', ')}.',
+        );
+      }
+    }
+
+    // Resumen final: Respuesta completa del usuario vs respuesta correcta
+    errorMessage
+      ..writeln('\n--- Resumen ---')
+      ..writeln(
+        'Tu respuesta: "${isCompletelyEmpty ? '(vacía)' : userAnswer}"',
+      )
+      ..writeln('Respuesta correcta: "${state.correctAnswer}"');
+
+    // Mostrar el AlertDialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Retroalimentación'),
+          content: Text(errorMessage.toString()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                var totalGoldStars = 0;
+                var totalGreenStars = 0;
+
+                if (!isCompletelyEmpty) {
+                  // Contar las estrellas
+                  final goldCount =
+                      state.stars.where((star) => star == StarType.gold).length;
+                  final greenCount = state.stars
+                      .where((star) => star == StarType.green)
+                      .length;
+                  final redCount =
+                      state.stars.where((star) => star == StarType.red).length;
+                  final noneCount =
+                      state.stars.where((star) => star == StarType.none).length;
+
+                  // Total de estrellas
+                  final totalStars =
+                      goldCount + greenCount + redCount + noneCount;
+
+                  // Calcular proporciones
+                  final goldProportion = goldCount / totalStars;
+                  final greenProportion = greenCount / totalStars;
+
+                  // Distribuir las 5 estrellas proporcionalmente
+                  totalGoldStars = (5 * goldProportion).floor();
+                  totalGreenStars = (5 * greenProportion).floor();
+
+                  // Calcular estrellas faltantes para alcanzar un total de 5
+                  final distributedTotal = totalGoldStars + totalGreenStars;
+                  final remainingStars = 5 - distributedTotal;
+
+                  // Penalización: No se asignan estrellas adicionales si hay errores o vacíos
+                  if (redCount + noneCount > 0) {
+                    // Reducir estrellas verdes si hay espacios vacíos o errores
+                    totalGreenStars = totalGreenStars > remainingStars
+                        ? totalGreenStars - remainingStars
+                        : totalGreenStars;
+                  }
+                }
+
+                onGameComplete(totalGoldStars, totalGreenStars);
+              },
+              child: const Text('Continuar'),
+            ),
+          ],
         );
       },
     );
