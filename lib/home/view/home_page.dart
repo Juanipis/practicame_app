@@ -4,8 +4,10 @@ import 'package:practicame_app/app/view/app.dart';
 import 'package:practicame_app/game_session/advanced_games.dart';
 import 'package:practicame_app/game_session/starter_games.dart';
 import 'package:practicame_app/game_session/view/game_session_page.dart';
-import 'package:user_repository/user_repository.dart';
+import 'package:practicame_app/home/view/credits.dart';
+import 'package:practicame_app/onboarding/view/onboarding_screen.dart';
 import 'package:practicame_app/teacher/view/teacher_screen.dart';
+import 'package:user_repository/user_repository.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({required this.userRepository, super.key});
@@ -20,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   int _goldStars = 0;
   int _greenStars = 0;
   AppMode _appMode = AppMode.unknown;
+  UserModel? _activeUser;
 
   @override
   void initState() {
@@ -50,10 +53,28 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
     setState(() {
       _appMode = appMode;
+      _activeUser = user;
       _userName = user?.name ?? '';
       _goldStars = user?.goldStars ?? 0;
       _greenStars = user?.greenStars ?? 0;
     });
+  }
+
+  void _editProfile() {
+    if (_activeUser == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<OnboardingScreen>(
+        builder: (_) => OnboardingScreen(
+          isTeacherMode: false,
+          initialStudent: _activeUser,
+          onProfileCompleted: (updatedUser) async {
+            await widget.userRepository.updateUser(updatedUser);
+            await _initializeHomeScreen();
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -76,6 +97,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                   );
                 },
               )
+            : null,
+        actions: _appMode == AppMode.student
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  tooltip: 'Editar Perfil',
+                  onPressed: _editProfile,
+                ),
+              ]
             : null,
       ),
       body: Padding(
@@ -149,6 +179,43 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 userRepository: widget.userRepository,
               ),
             ),
+          ),
+        ),
+        const Spacer(),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Logo de Aula Abierta
+            const SizedBox(
+              height: 120, // Ajusta el tamaño del logo
+              child: Image(
+                image: AssetImage('assets/brand/logo.png'),
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(height: 8), // Espacio entre logo y texto
+
+            // Texto "Una app de Aula Abierta"
+            Text(
+              'Una app de Aula Abierta',
+              style: GoogleFonts.chewy(fontSize: 16),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 150,
+          child: ElevatedButton(
+            onPressed: () {
+              showCreditsDialog(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 207, 225, 249),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: const BorderSide(color: Colors.blue, width: 2),
+              ),
+            ),
+            child: const Text('CRÉDITOS', style: TextStyle(fontSize: 16)),
           ),
         ),
       ],

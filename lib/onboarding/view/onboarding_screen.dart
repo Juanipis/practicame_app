@@ -82,9 +82,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _selectDate(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(
-        const Duration(days: 365 * 18),
-      ), // Default: 18 years ago
       firstDate: DateTime(1900), // Minimum date
       lastDate: DateTime.now(), // Maximum date
       helpText: 'Selecciona tu fecha de nacimiento',
@@ -105,8 +102,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final isDateValid = selectedDate != null;
     final isEpsValid = selectedEPS != null;
 
-    return _formKey.currentState?.validate() ??
-        false && isDateValid && isEpsValid;
+    return (_formKey.currentState?.validate() ?? false) &&
+        isDateValid &&
+        isEpsValid;
   }
 
   void _submitForm() {
@@ -150,11 +148,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             key: _formKey,
             child: Column(
               children: [
-                _buildTextField(nameController, 'Nombre'),
-                _buildTextField(lastNameController, 'Apellido'),
+                _buildTextField(
+                  nameController,
+                  'Nombre',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el nombre';
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  lastNameController,
+                  'Apellido',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el apellido';
+                    }
+                    return null;
+                  },
+                ),
                 _buildTextField(
                   documentController,
                   'Número de Documento',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el número de documento';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 _buildDateField(),
@@ -162,25 +185,94 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ageController,
                   'Edad',
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar la edad';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.number,
                 ),
                 _buildDropdownField(),
-                _buildTextField(bloodTypeController, 'Tipo de Sangre'),
-                _buildTextField(municipalityController, 'Municipio'),
-                _buildTextField(addressController, 'Dirección'),
-                _buildTextField(neighborhoodController, 'Barrio'),
+                _buildTextField(
+                  bloodTypeController,
+                  'Tipo de Sangre',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el tipo de sangre';
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  municipalityController,
+                  'Municipio',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el municipio';
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  addressController,
+                  'Dirección',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar la dirección';
+                    }
+                    return null;
+                  },
+                ),
+                _buildTextField(
+                  neighborhoodController,
+                  'Barrio',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el barrio';
+                    }
+                    return null;
+                  },
+                ),
                 _buildTextField(
                   phoneController,
                   'Número de Celular',
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el número de celular';
+                    }
+                    if (value.length != 10) {
+                      return 'El número de celular debe tener 10 dígitos';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
                 ),
                 _buildTextField(
                   emergencyContactNameController,
                   'Nombre de Contacto de Emergencia',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el nombre de contacto de emergencia';
+                    }
+                    return null;
+                  },
                 ),
                 _buildTextField(
                   emergencyContactPhoneController,
                   'Teléfono de Contacto de Emergencia',
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes ingresar el teléfono de contacto de emergencia';
+                    }
+                    if (value.length != 10) {
+                      return 'El teléfono de contacto de emergencia debe tener 10 dígitos';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
@@ -207,15 +299,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     TextEditingController controller,
     String label, {
     List<TextInputFormatter>? inputFormatters,
+    String? Function(String?)? validator,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
         inputFormatters: inputFormatters,
+        keyboardType: keyboardType,
         decoration: InputDecoration(labelText: label),
-        validator: (value) =>
-            value == null || value.isEmpty ? 'Este campo es obligatorio' : null,
+        validator: validator,
+        onChanged: (value) {
+          setState(() {
+            _formKey.currentState?.validate();
+          });
+        },
       ),
     );
   }
