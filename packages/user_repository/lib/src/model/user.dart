@@ -22,7 +22,10 @@ class UserModel {
     required this.emergencyContactName,
     required this.emergencyContactPhone,
     required this.lastName,
+    this.id = Isar.autoIncrement,
     this.isOnboardingComplete = false,
+    this.goldStars = 0,
+    this.greenStars = 0,
   }) : fullName = '$name $lastName';
 
   /// Factory method to create a default user.
@@ -44,27 +47,7 @@ class UserModel {
     );
   }
 
-  /// Factory method to create a user from a map.
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      name: map['name'] as String,
-      document: map['document'] as String,
-      birthDate: DateTime.parse(map['birthDate'] as String),
-      age: map['age'] as int,
-      bloodType: map['bloodType'] as String,
-      municipality: map['municipality'] as String,
-      address: map['address'] as String,
-      neighborhood: map['neighborhood'] as String,
-      phone: map['phone'] as String,
-      emergencyContactName: map['emergencyContactName'] as String,
-      emergencyContactPhone: map['emergencyContactPhone'] as String,
-      lastName: map['lastName'] as String,
-      eps: EPS.values.firstWhere((element) => element.toString() == map['eps']),
-      isOnboardingComplete: map['isOnboardingComplete'] as bool,
-    );
-  }
-
-  Id id = Isar.autoIncrement; // ID autoincremental
+  Id id; // Expose the ID field
 
   /// The name of the user.
   final String name;
@@ -105,22 +88,30 @@ class UserModel {
   /// The phone number of the emergency contact.
   final String emergencyContactPhone;
 
+  /// Whether the onboarding process is complete.
   bool isOnboardingComplete;
 
   /// The EPS of the user.
-  @Enumerated(EnumType.name)
+  @Enumerated(EnumType.ordinal)
   final EPS eps;
+
+  /// Gold stars for this user.
+  int goldStars;
+
+  /// Green stars for this user.
+  int greenStars;
 
   /// Map representation of the user.
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'name': name,
       'lastName': lastName,
       'fullName': fullName,
       'document': document,
       'birthDate': birthDate.toIso8601String(),
       'age': age,
-      'eps': eps.toString(),
+      'eps': eps.name, // Usa el nombre del enum
       'bloodType': bloodType,
       'municipality': municipality,
       'address': address,
@@ -129,7 +120,51 @@ class UserModel {
       'emergencyContactName': emergencyContactName,
       'emergencyContactPhone': emergencyContactPhone,
       'isOnboardingComplete': isOnboardingComplete,
+      'goldStars': goldStars,
+      'greenStars': greenStars,
     };
+  }
+
+  /// Copy of the user with the new values.
+  UserModel copyWith({
+    Id? id,
+    String? name,
+    String? lastName,
+    String? document,
+    DateTime? birthDate,
+    int? age,
+    EPS? eps,
+    String? bloodType,
+    String? municipality,
+    String? address,
+    String? neighborhood,
+    String? phone,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    bool? isOnboardingComplete,
+    int? goldStars,
+    int? greenStars,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      lastName: lastName ?? this.lastName,
+      document: document ?? this.document,
+      birthDate: birthDate ?? this.birthDate,
+      age: age ?? this.age,
+      eps: eps ?? this.eps,
+      bloodType: bloodType ?? this.bloodType,
+      municipality: municipality ?? this.municipality,
+      address: address ?? this.address,
+      neighborhood: neighborhood ?? this.neighborhood,
+      phone: phone ?? this.phone,
+      emergencyContactName: emergencyContactName ?? this.emergencyContactName,
+      emergencyContactPhone:
+          emergencyContactPhone ?? this.emergencyContactPhone,
+      isOnboardingComplete: isOnboardingComplete ?? this.isOnboardingComplete,
+      goldStars: goldStars ?? this.goldStars,
+      greenStars: greenStars ?? this.greenStars,
+    );
   }
 }
 
@@ -177,7 +212,7 @@ enum EPS {
     'assets/eps/servicio_occidental_de_salud_s_a.webp',
   ),
   medicina_prepagada_suramericana_s_a(
-    'Medicina Prepagada Suramericana S.A.',
+    'Sura EPS',
     'assets/eps/medicina_prepagada_suramericana_s_a.png',
   ),
   fundacion_salud_mia(
