@@ -23,6 +23,10 @@ void showCreditsDialog(BuildContext context) {
             name: 'Repositorio del Proyecto',
             githubUrl: 'https://github.com/Juanipis/practicame_app',
           ),
+          Text(
+            'Universidad EIA',
+            style: GoogleFonts.chewy(fontSize: 16),
+          ),
         ],
       ),
       actions: [
