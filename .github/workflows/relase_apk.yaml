@@ -1,0 +1,95 @@
+name: Release APK
+
+concurrency:
+  group: release_apk
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  KEY_PROPERTIES_BASE64: ${{ secrets.KEY_PROPERTIES_BASE64 }}
+  KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+jobs:
+  release:
+    name: Build and Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: 3.22.2
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Decode key.properties
+        run: |
+          echo "${{ env.KEY_PROPERTIES_BASE64 }}" | base64 --decode > android/key.properties
+        shell: bash
+
+      - name: Decode keystore
+        run: |
+          echo "${{ env.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+        shell: bash
+
+      - name: Build APK
+        run: flutter build apk --flavor production --target lib/main_production.dart
+
+      - name: Determine new version tag
+        id: tag
+        run: |
+          # Obtener todos los tags remotos
+          git fetch --tags
+          last_tag=$(git tag --list | sort -V | tail -n 1)
+
+          if [ -z "$last_tag" ]; then
+            # Crear el primer tag si no existen
+            new_tag="v0.1.0"
+          else
+            # Incrementar el último tag automáticamente
+            new_tag=$(echo $last_tag | awk -F. '{$3 += 1;} 1' | sed 's/ /./g')
+          fi
+
+          echo "New tag is $new_tag"
+          echo "tag=$new_tag" >> $GITHUB_ENV
+
+      - name: Create new Git tag
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git tag ${{ env.tag }}
+          git push origin ${{ env.tag }}
+
+      - name: Generate Semantic Version and Create Release
+        id: release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.tag }}
+          files: build/app/outputs/flutter-apk/app-production-release.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean up
+        run: |
+          rm android/key.properties
+          rm android/app/upload-keystore.jks
+        shell: bash
